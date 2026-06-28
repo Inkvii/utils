@@ -1,6 +1,6 @@
 import { isEmptyArray, isEmptyObject, isInvalidNumber } from "~/merge/utils"
 
-export type IsInvalidPrimitiveOptions<TValue> = {
+export interface IsInvalidPrimitiveOptions<TValue> {
 	/**
 	 * If `true` - `null` values will not be marked for removal
 	 */

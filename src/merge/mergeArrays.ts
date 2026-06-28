@@ -2,7 +2,7 @@ import { isPlainObject } from "~/merge/utils"
 import { filterValidPrimitiveArrayValues } from "~/merge/filterValidPrimitiveArrayValues"
 import type { IsInvalidPrimitiveOptions } from "~/merge/isInvalidPrimitive"
 
-export type MergeArraysOptions<TData> = IsInvalidPrimitiveOptions<TData> & {
+export interface MergeArraysOptions<TData> extends IsInvalidPrimitiveOptions<TData> {
 	/**
 	 * If `true` - disables `Set` behavior for array values
 	 * @example ```tsx
