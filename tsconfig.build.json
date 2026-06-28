@@ -8,7 +8,7 @@
 		"**/*spec.ts"
 	],
 	"compilerOptions": {
-		"tsBuildInfoFile": "build/.tsbuildinfo.build",
+		"tsBuildInfoFile": ".tsbuildinfo.build",
 		"moduleResolution": "bundler",
 		"paths": {
 			"@/*": [
