@@ -1,0 +1,23 @@
+{
+	"include": ["src"],
+	"compilerOptions": {
+		"lib": ["DOM", "DOM.Iterable", "ES2024"],
+		"types": ["node"],
+		"target": "ES2024",
+		"module": "ESNext",
+		"moduleResolution": "bundler",
+		"incremental": true,
+		"declaration": true,
+		"outDir": "build",
+		"rootDir": ".",
+		"paths": {
+			"@/*": ["./*"],
+			"~/*": ["./src/*"]
+		},
+		"esModuleInterop": true,
+		"verbatimModuleSyntax": true,
+		"resolveJsonModule": true,
+		"skipLibCheck": true,
+		"strict": true
+	}
+}

@@ -1,0 +1,40 @@
+{
+	"name": "@1nkvi/utils",
+	"version": "1.0.0",
+	"description": "Helper functions",
+	"scripts": {
+		"build": "tsc --build --clean && tsc",
+		"lint": "eslint --max-warnings=0 --cache",
+		"lint:fix": "eslint --max-warnings=0 --cache --fix",
+		"format": "prettier --check --cache ./src",
+		"format:fix": "prettier --check --cache --write .",
+		"test": "vitest run"
+	},
+	"keywords": [
+		"merge"
+	],
+	"author": "1nkvi",
+	"license": "ISC",
+	"packageManager": "pnpm@10.19.0",
+	"devDependencies": {
+		"@eslint/js": "10.0.1",
+		"@types/node": "24.10.8",
+		"eslint": "10.5.0",
+		"eslint-config-prettier": "10.1.8",
+		"prettier": "3.8.2",
+		"typescript": "6.0.3",
+		"typescript-eslint": "8.60.1",
+		"vitest": "4.1.9"
+	},
+	"engines": {
+		"node": ">=24"
+	},
+	"main": "build/index.js",
+	"types": "build/index.d.ts",
+	"exports": {
+		".": {
+			"import": "./build/index.js",
+			"types": "./build/index.d.ts"
+		}
+	}
+}
