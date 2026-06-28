@@ -9,7 +9,7 @@
 		"moduleResolution": "bundler",
 		"incremental": true,
 		"declaration": true,
-		"outDir": "build",
+		"outDir": "build/artifacts",
 		"rootDir": ".",
 		"paths": {
 			"@/*": ["./*"],

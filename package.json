@@ -31,16 +31,16 @@
 	"engines": {
 		"node": ">=24"
 	},
-	"main": "build/src/index.js",
-	"types": "build/src/index.d.ts",
+	"main": "build/artifacts/src/index.js",
+	"types": "build/artifacts/src/index.d.ts",
 	"exports": {
 		".": {
-			"import": "./build/src/index.js",
-			"types": "./build/src/index.d.ts"
+			"import": "./build/artifacts/src/index.js",
+			"types": "./build/artifacts/src/index.d.ts"
 		}
 	},
 	"files": [
-		"build"
+		"build/artifacts"
 	],
 	"sideEffects": false,
 	"repository": {
