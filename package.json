@@ -9,7 +9,7 @@
 		"format": "prettier --check --cache ./src",
 		"format:fix": "prettier --check --cache --write .",
 		"test": "vitest run",
-    "deploy": "pnpm publish --access public"
+		"deploy": "pnpm publish --access public"
 	},
 	"keywords": [
 		"merge"
@@ -42,5 +42,8 @@
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/Inkvii/utils.git"
-	}
+	},
+	"files": [
+		"build"
+	]
 }
