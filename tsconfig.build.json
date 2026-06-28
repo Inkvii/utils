@@ -1,8 +1,22 @@
 {
 	"extends": "./tsconfig.json",
-	"include": ["src"],
-	"exclude": ["**/*test.ts", "**/*spec.ts"],
+	"include": [
+		"src"
+	],
+	"exclude": [
+		"**/*test.ts",
+		"**/*spec.ts"
+	],
 	"compilerOptions": {
-		"tsBuildInfoFile": "build/.tsbuildinfo.build"
+		"tsBuildInfoFile": "build/.tsbuildinfo.build",
+		"moduleResolution": "bundler",
+		"paths": {
+			"@/*": [
+				"./*"
+			],
+			"~/*": [
+				"./src/*"
+			]
+		}
 	}
 }
