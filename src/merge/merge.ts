@@ -1,5 +1,6 @@
 import { isInvalidPrimitive } from "~/merge/isInvalidPrimitive"
-import { isPlainObject, tuplify } from "~/merge/utils"
+import { isPlainObject } from "~/merge/utils"
+import { tuplify } from "~/tuplify"
 import { mergeArrays, type MergeArraysOptions } from "~/merge/mergeArrays"
 import type { DeepPartial } from "~/merge/DeepPartial"
 
