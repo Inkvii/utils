@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { tuplify } from "~/tuplify"
+import { tuplify } from "~/array/tuplify"
 
 describe("tuplify", () => {
 	it("Wraps a single primitive into a one-element array", () => {
