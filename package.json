@@ -9,7 +9,7 @@
 		"format": "prettier --check --cache ./src",
 		"format:fix": "prettier --check --cache --write .",
 		"test": "vitest run",
-		"deploy": "pnpm pack"
+    "deploy": "pnpm publish --access public"
 	},
 	"keywords": [
 		"merge"
