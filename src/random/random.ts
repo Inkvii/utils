@@ -1,8 +1,19 @@
-export type RandomOptions = {
+export interface RandomOptions {
 	excludeMin?: true
 	excludeMax?: true
 }
 
+/**
+ * Returns random integer number between `min` and `max` based on the `options`
+ * @param min min value (inclusive by default). Must be less than `max`
+ * @param max max value (inclusive by default). Must be greater than `min`
+ * @param options further options for modifying generator behavior
+ *
+ * @example ```tsx
+ * random(1, 10)
+ * // returns single value from  inclusive interval <1, 10>
+ * ```
+ */
 export function random(min: number, max: number, options?: RandomOptions) {
 	if (min === max) {
 		return Math.floor(min)
@@ -27,7 +38,7 @@ export function random(min: number, max: number, options?: RandomOptions) {
 	return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
-export type RandomMarginalChangeOptions = {
+export interface RandomMarginalChangeOptions {
 	/**
 	 * Value added to the `min` in the random function
 	 * @default 0
@@ -62,13 +73,14 @@ export type RandomMarginalChangeOptions = {
  * Takes initial value and creates marginal change based on options values.
  *
  * Insert percentages as decimals - 100% = 1.00; 1% = 0.01 calculated from initial value.
+ * @example
  * ```typescript
  *  randomMarginalChange(100, {minFixed: -10, maxFixed: 10, minPercentage: 0.9, maxPercentage: 1.1})
  *  // results in interval  min: (100 - 10) * 0.9; max: (100 + 10) * 1.1
  *  // where result will be <89; 121>
  *
  * ```
- * Returns floored random value
+ * @remark Returns floored random value
  *
  * @param value initial value to be derived
  * @param options fixed values default to 0, percentage values defaults to 1
