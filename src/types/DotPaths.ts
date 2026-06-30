@@ -1,6 +1,5 @@
 import type { IsPlainObject } from "~/types/IsPlainObject"
 
-
 /**
  * Recursively builds a union of all nested property paths in dot‑notation.
  * Only plain objects are traversed; primitives, arrays, and functions
@@ -12,11 +11,7 @@ import type { IsPlainObject } from "~/types/IsPlainObject"
  * ```
  */
 export type DotPaths<TObject> = {
-	[TKey in keyof TObject]:
-	IsPlainObject<TObject[TKey]> extends true
+	[TKey in keyof TObject]: IsPlainObject<TObject[TKey]> extends true
 		? `${TKey & string}.${DotPaths<TObject[TKey]>}`
 		: TKey & string
-}[keyof TObject];
-
-
-
+}[keyof TObject]

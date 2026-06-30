@@ -21,11 +21,9 @@ import type { IsPlainObject } from "~/types/IsPlainObject"
  * ```
  */
 export type FlatObject<T> = {
-	[Key in keyof T & string]:
-	IsPlainObject<T[Key]> extends true
+	[Key in keyof T & string]: IsPlainObject<T[Key]> extends true
 		? {
-			[SubKey in keyof FlatObject<T[Key]> & string as `${Key}.${SubKey}`]:
-			FlatObject<T[Key]>[SubKey]
-		}
+				[SubKey in keyof FlatObject<T[Key]> & string as `${Key}.${SubKey}`]: FlatObject<T[Key]>[SubKey]
+			}
 		: { [FlatKey in Key]: T[Key] }
-}[keyof T & string];
+}[keyof T & string]

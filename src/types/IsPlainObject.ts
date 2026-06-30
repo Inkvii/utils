@@ -12,11 +12,10 @@
  * @typeParam T - The type being checked.
  * @returns `true` if `TObject` is a non‑array, non‑function object; otherwise `false`.
  */
-export type IsPlainObject<TObject> =
-	TObject extends object
-		? TObject extends unknown[]
+export type IsPlainObject<TObject> = TObject extends object
+	? TObject extends unknown[]
+		? false
+		: TObject extends (...args: unknown[]) => unknown
 			? false
-			: TObject extends (...args: unknown[]) => unknown
-				? false
-				: true
-		: false;
+			: true
+	: false
