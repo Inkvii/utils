@@ -1,8 +1,8 @@
 import { isInvalidPrimitive } from "~/merge/isInvalidPrimitive"
-import { isPlainObject } from "~/merge/utils"
+import { isPlainObject } from "~/guard/utils"
 import { tuplify } from "~/array/tuplify"
 import { mergeArrays, type MergeArraysOptions } from "~/merge/mergeArrays"
-import type { DeepPartial } from "~/merge/DeepPartial"
+import type { DeepPartial } from "~/types/DeepPartial"
 
 export type MergeOptions<TData> = Omit<MergeArraysOptions<TData>, "validators"> & {
 	/**

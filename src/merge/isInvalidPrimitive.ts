@@ -1,4 +1,4 @@
-import { isEmptyArray, isEmptyObject, isInvalidNumber } from "~/merge/utils"
+import { isEmptyArray, isEmptyObject, isInvalidNumber } from "~/guard/utils"
 
 export interface IsInvalidPrimitiveOptions<TValue> {
 	/**

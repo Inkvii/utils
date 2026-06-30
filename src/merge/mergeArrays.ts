@@ -1,4 +1,4 @@
-import { isPlainObject } from "~/merge/utils"
+import { isPlainObject } from "~/guard/utils"
 import { filterValidPrimitiveArrayValues } from "~/merge/filterValidPrimitiveArrayValues"
 import type { IsInvalidPrimitiveOptions } from "~/merge/isInvalidPrimitive"
 

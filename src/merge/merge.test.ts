@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 import { merge } from "~/merge/merge"
-import type { DeepPartial } from "~/merge/DeepPartial"
+import type { DeepPartial } from "~/types/DeepPartial"
 
 type ChildObj = {
 	int: number
