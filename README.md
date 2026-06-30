@@ -1,8 +1,16 @@
 # @1nkvi/utils
 
+```shell
+pnpm i @1nkvi/utils
+```
+
 Helper functions for **deeply merging** partial objects and arrays, plus a few small array/value utilities. Give it a
 list of partial objects and it composes them into one — overriding primitives, concatenating and de-duplicating arrays,
 and merging nested objects recursively — while filtering out "empty" values like `null`, `undefined` and `""`.
+
+## Changelog
+
+[Changelog link](./CHANGELOG.md)
 
 ## Quick start
 
