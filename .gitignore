@@ -4,3 +4,4 @@ node_modules
 build
 1nkvi*.tgz
 .pnpm-store
+.claude

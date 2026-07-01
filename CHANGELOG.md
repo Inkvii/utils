@@ -2,10 +2,13 @@
 
 - Added changelog
 - Added helper types for path traveling
+- Added `replace` for immutable, type-safe deep updates by dot-notation path
+- `DotPaths` now emits intermediate object paths in addition to leaves; `DotPathsWithArrayIndex` and `FlatObject` handle
+  array indices and whole object/array paths
 
 ## Refactor
 
-- Internal restructuralization of types and objects. API not changed
+- Internal restructuralization of types and objects
 
 # v0.2.0
 

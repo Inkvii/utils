@@ -49,22 +49,23 @@ IsPlainObject<string> // → false
 
 ## `DotPaths<T>`
 
-Builds a union of all nested property paths in dot-notation. Only plain objects are traversed; primitives, arrays, and
-functions produce their key directly without recursion.
+Builds a union of all nested property paths in dot-notation, including every intermediate object path as well as its
+leaves. Only plain objects are traversed; primitives, arrays, and functions produce their key directly without
+recursion.
 
 ```ts
 type Example = { a: string; b: { c: { d: number } } }
 
 type Paths = DotPaths<Example>
-// "a" | "b.c.d"
+// "a" | "b" | "b.c" | "b.c.d"
 ```
 
 ---
 
 ## `LeafDotPaths<T>`
 
-Like `DotPaths`, but yields only leaf paths (the deepest keys). For the structures in these examples the result matches
-`DotPaths`, since intermediate object keys are not emitted on their own.
+Like `DotPaths`, but yields **only** leaf paths (the deepest keys) — intermediate object keys such as `"b"` and `"b.c"`
+are not emitted on their own.
 
 ```ts
 type Example = {
@@ -80,32 +81,41 @@ type Paths = LeafDotPaths<Example>
 
 ## `DotPathsWithArrayIndex<T>`
 
-Builds dot-notation paths that also descend into arrays, emitting numeric indices along the way.
+Like `DotPaths`, but also descends into arrays, emitting a generic numeric index (`${number}`) for each array segment.
+Works with plain arrays, not just tuples.
 
 ```ts
 type Example = {
-	users: [{ name: string }]
+	users: { name: string }[]
 }
 
 type Paths = DotPathsWithArrayIndex<Example>
-// "users" | "users.0" | "users.0.name"
+// "users" | `users.${number}` | `users.${number}.name`
 ```
 
 ---
 
 ## `FlatObject<T>`
 
-Produces a flattened object type where keys are dot-notation paths and values are the corresponding leaf values.
+Produces a flattened object type where keys are dot-notation paths and values are the value at that path. Both
+intermediate paths (objects and arrays) and leaf paths are emitted, and arrays are descended with a generic numeric
+index (`${number}`), so a whole nested object/array can be addressed as safely as a leaf. Used by
+[`replace`](./object.md#replaceobject-key-value) to type its `key` and `value`.
 
 ```ts
 type Example = {
 	a: string
 	b: { c: number }
+	items: { id: string }[]
 }
 
 type Flat = FlatObject<Example>
 // {
 //   "a": string;
+//   "b": { c: number };
 //   "b.c": number;
+//   "items": { id: string }[];
+//   [k: `items.${number}`]: { id: string };
+//   [k: `items.${number}.id`]: string;
 // }
 ```
