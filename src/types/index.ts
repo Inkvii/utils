@@ -1,4 +1,4 @@
-import type { DotPaths, DotPathsWithArrayIndex, LeafDotPaths } from "@/src"
+import type { DotPaths, DotPathsWithArrayIndex, FlatObject, LeafDotPaths } from "@/src"
 
 export * from "./DeepPartial"
 export * from "./DotPaths"
@@ -72,3 +72,42 @@ test<TestLeafPaths>("nested.arr")
 // @ts-expect-error
 test<TestLeafPaths>("nested.deep") //should error
 test<TestLeafPaths>("nested.deep.here") //should error
+
+// -------- replace --------
+
+/**
+ * Replaces a single deeply nested value, addressed by a dot‑notation path.
+ * The `value` type is derived from {@link FlatObject}, so it must match the
+ * type of the leaf at `key`.
+ */
+function replace<TObject, TKey extends keyof FlatObject<TObject> & string>(
+	object: TObject,
+	key: TKey,
+	value: FlatObject<TObject>[TKey],
+): void {}
+
+const myObject: Test = {
+	a:"Hello",
+	b: 12,
+	c: false,
+	d: ["first", "second"],
+	nested: {
+		arr: [{key: "an", value: "ANO"}, {key: "non", value:"No"}],
+		value: "Hey there",
+		deep: {
+			here: true
+		}
+
+	}
+}
+
+replace(myObject, "a", "newValue")
+replace(myObject, "b", 1234)
+replace(myObject, "nested.value", "newValue")
+replace(myObject, "nested.arr.0", {key: "Yep", value: "Yupup"})
+replace(myObject, "nested.arr", [{key: "Yep", value: "Yupup"}])
+replace(myObject, "nested.arr.0.value", "newValue")
+replace(myObject, "d.0", "newValue")
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error boolean leaf does not accept a string
+replace(myObject, "nested.deep.here", "newValue")
