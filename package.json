@@ -1,6 +1,6 @@
 {
 	"name": "@1nkvi/utils",
-	"version": "0.2.0",
+	"version": "0.3.0",
 	"description": "Helper functions",
 	"scripts": {
 		"build": "tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
