@@ -12,6 +12,6 @@ import type { IsPlainObject } from "~/types/IsPlainObject"
  */
 export type DotPaths<TObject> = {
 	[TKey in keyof TObject]: IsPlainObject<TObject[TKey]> extends true
-		? `${TKey & string}.${DotPaths<TObject[TKey]>}`
+		? (TKey & string) | `${TKey & string}.${DotPaths<TObject[TKey]>}`
 		: TKey & string
 }[keyof TObject]
