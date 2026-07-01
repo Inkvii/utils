@@ -8,4 +8,12 @@ export default defineConfig({
 			"~": path.resolve(__dirname, "src"),
 		},
 	},
+	test: {
+		// Run *.test-d.ts type tests as part of every `vitest run`, alongside the
+		// runtime tests. Costs an extra ~0.5s per run (spawns tsc); set this back
+		// to false (or remove the block) to keep runtime runs fast.
+		typecheck: {
+			enabled: true,
+		},
+	},
 })
