@@ -18,15 +18,17 @@ import type { IsPlainObject } from "~/types/IsPlainObject"
  * ```
  */
 export type DotPathsWithArrayIndex<TObject> = TObject extends unknown[]
-	? {
-			[TIndex in keyof TObject & `${number}`]: TObject[TIndex] extends object
-				? `${TIndex}.${DotPathsWithArrayIndex<TObject[TIndex]>}`
-				: TIndex
-		}[keyof TObject & `${number}`]
+	? TObject extends (infer TElement)[]
+		? TElement extends unknown[]
+			? `${number}` | `${number}.${DotPathsWithArrayIndex<TElement>}`
+			: IsPlainObject<TElement> extends true
+				? `${number}` | `${number}.${DotPathsWithArrayIndex<TElement>}`
+				: `${number}`
+		: never
 	: {
 			[TKey in keyof TObject]: TObject[TKey] extends unknown[]
-				? `${TKey & string}.${DotPathsWithArrayIndex<TObject[TKey]>}`
+				? (TKey & string) | `${TKey & string}.${DotPathsWithArrayIndex<TObject[TKey]>}`
 				: IsPlainObject<TObject[TKey]> extends true
-					? `${TKey & string}.${DotPathsWithArrayIndex<TObject[TKey]>}`
+					? (TKey & string) | `${TKey & string}.${DotPathsWithArrayIndex<TObject[TKey]>}`
 					: TKey & string
 		}[keyof TObject]
