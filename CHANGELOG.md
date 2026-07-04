@@ -1,3 +1,8 @@
+## Refactor
+- Strip optional types from result of `DotPaths` and similar
+
+# v0.3.0
+
 ## Features
 
 - Added changelog
