@@ -4,9 +4,9 @@ import type { IsPlainObject } from "~/types/IsPlainObject"
  * Collapses a union of objects into a single intersected object so that the
  * per‑key results below merge into one flat lookup map instead of a union.
  */
-type UnionToIntersection<TUnion> = (
-	TUnion extends unknown ? (arg: TUnion) => void : never
-) extends (arg: infer TIntersection) => void
+type UnionToIntersection<TUnion> = (TUnion extends unknown ? (arg: TUnion) => void : never) extends (
+	arg: infer TIntersection
+) => void
 	? TIntersection
 	: never
 
@@ -48,8 +48,10 @@ export type FlatObject<T> = T extends readonly (infer TElement)[]
 					[SubKey in keyof FlatObject<TElement> & string as `${number}.${SubKey}`]: FlatObject<TElement>[SubKey]
 				}
 			: { [Index in `${number}`]: TElement }
-	: UnionToIntersection<
-			{
+	: FlatObjectFromKeys<Required<T>> // <-- strip optional here
+
+type FlatObjectFromKeys<T> = UnionToIntersection<
+	{
 				[Key in keyof T & string]: IsPlainObject<T[Key]> extends true
 					? { [FlatKey in Key]: T[Key] } & {
 							[SubKey in keyof FlatObject<T[Key]> & string as `${Key}.${SubKey}`]: FlatObject<T[Key]>[SubKey]
