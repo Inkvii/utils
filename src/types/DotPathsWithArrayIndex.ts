@@ -26,9 +26,11 @@ export type DotPathsWithArrayIndex<TObject> = TObject extends unknown[]
 				: `${number}`
 		: never
 	: {
-			[TKey in keyof TObject]: TObject[TKey] extends unknown[]
+			[TKey in keyof TObject]-?: TObject[TKey] extends unknown[]
 				? (TKey & string) | `${TKey & string}.${DotPathsWithArrayIndex<TObject[TKey]>}`
 				: IsPlainObject<TObject[TKey]> extends true
 					? (TKey & string) | `${TKey & string}.${DotPathsWithArrayIndex<TObject[TKey]>}`
 					: TKey & string
 		}[keyof TObject]
+
+

@@ -17,7 +17,7 @@ import type { IsPlainObject } from "~/types/IsPlainObject"
  * ```
  */
 export type LeafDotPaths<TObject> = {
-	[TKey in keyof TObject]: IsPlainObject<TObject[TKey]> extends true
+	[TKey in keyof TObject]-?: IsPlainObject<TObject[TKey]> extends true
 		? `${TKey & string}.${LeafDotPaths<TObject[TKey]>}`
 		: TKey & string
 }[keyof TObject]

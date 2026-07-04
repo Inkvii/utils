@@ -48,7 +48,7 @@ export type FlatObject<T> = T extends readonly (infer TElement)[]
 					[SubKey in keyof FlatObject<TElement> & string as `${number}.${SubKey}`]: FlatObject<TElement>[SubKey]
 				}
 			: { [Index in `${number}`]: TElement }
-	: FlatObjectFromKeys<Required<T>> // <-- strip optional here
+	: FlatObjectFromKeys<Required<T>>
 
 type FlatObjectFromKeys<T> = UnionToIntersection<
 	{
