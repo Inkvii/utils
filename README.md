@@ -4,11 +4,9 @@
 pnpm i @1nkvi/utils
 ```
 
-A small collection of TypeScript helper functions and utility types. Its centerpiece is **deeply merging** partial
-objects and arrays — composing a list of partials into one while overriding primitives, concatenating and de-duplicating
-arrays, and merging nested objects recursively, all while filtering out "empty" values like `null`, `undefined` and
-`""`. Alongside it are a handful of array, map, randomness, and type-guard utilities, plus reusable object/path utility
-types.
+Type-safe utility functions for the common scenarios that occur when working with objects — deep merging, immutable updates
+by dot-notation path, and dot-path utility types — plus a handful of array, map, randomness, and type-guard helpers to
+round things out.
 
 ## Changelog
 
@@ -19,8 +17,8 @@ types.
 ```ts
 import { merge } from "@1nkvi/utils"
 
-merge([{ id: 1 }, { name: "Ada" }, { name: "Ada Lovelace" }])
-// → { id: 1, name: "Ada Lovelace" }
+merge([{ id: 1 }, { name: "Hello" }, { name: "World" }])
+// → { id: 1, name: "World" }
 ```
 
 ## Modules
