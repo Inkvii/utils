@@ -1,3 +1,8 @@
+## Features
+- Added `LooseString` type for string with autocomplete of the union type
+- Added `getCssProperty(...)` for retrieving css variable values
+
+# v0.3.1
 ## Refactor
 - Strip optional types from result of `DotPaths` and similar
 

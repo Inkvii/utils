@@ -2,7 +2,7 @@
 	"include": ["**/*"],
 	"exclude": ["node_modules", ".pnpm-store", "build"],
 	"compilerOptions": {
-		"lib": ["ES2024"],
+		"lib": ["ES2024", "DOM"],
 		"types": ["node"],
 		"target": "ES2024",
 		"module": "ESNext",
