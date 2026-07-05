@@ -1,5 +1,10 @@
 # @1nkvi/utils
 
+[![npm version](https://img.shields.io/npm/v/@1nkvi/utils.svg)](https://www.npmjs.com/package/@1nkvi/utils)
+[![npm downloads](https://img.shields.io/npm/dm/@1nkvi/utils.svg)](https://www.npmjs.com/package/@1nkvi/utils)
+[![types](https://img.shields.io/npm/types/@1nkvi/utils.svg)](https://www.npmjs.com/package/@1nkvi/utils)
+[![license](https://img.shields.io/npm/l/@1nkvi/utils.svg)](./LICENSE)
+
 ```shell
 pnpm i @1nkvi/utils
 ```
