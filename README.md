@@ -5,13 +5,25 @@
 [![types](https://img.shields.io/npm/types/@1nkvi/utils.svg)](https://www.npmjs.com/package/@1nkvi/utils)
 [![license](https://img.shields.io/npm/l/@1nkvi/utils.svg)](./LICENSE)
 
-```shell
-pnpm i @1nkvi/utils
-```
-
 Type-safe utility functions for the common scenarios that occur when working with objects — deep merging, immutable updates
 by dot-notation path, and dot-path utility types — plus a handful of array, map, randomness, and type-guard helpers to
 round things out.
+
+- 🧩 **Fully typed** — written in TypeScript; ships its own declarations.
+- 🌳 **Tree-shakeable** — side-effect free, so bundlers drop what you don't import.
+- 🪶 **Zero runtime dependencies.**
+
+## Requirements
+
+- **ESM-only.** The package ships only an `import` entry — use it from ESM (or a bundler). `require("@1nkvi/utils")`
+  is not supported.
+- **Node ≥ 24.**
+
+## Install
+
+```shell
+pnpm i @1nkvi/utils
+```
 
 ## Changelog
 
