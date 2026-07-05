@@ -33,4 +33,5 @@ merge([{ id: 1 }, { name: "Ada" }, { name: "Ada Lovelace" }])
 | [merge](./docs/merge.md)   | Deeply `merge` partial objects, `mergeArrays` with de-duplication, and `filterValidPrimitiveArrayValues`, all skipping "empty" values.                  |
 | [object](./docs/object.md) | `replace` a single deeply nested value by dot-notation path — immutably and type-safely, without touching its siblings.                                 |
 | [random](./docs/random.md) | Random integers: `random` within inclusive/exclusive bounds, and `randomMarginalChange` to nudge a value by fixed and percentage margins.               |
-| [types](./docs/types.md)   | Utility types for nested objects: `DeepPartial`, `DotPaths`, `LeafDotPaths`, `DotPathsWithArrayIndex`, `FlatObject`, `IsPlainObject`.                   |
+| [types](./docs/types.md)   | Utility types for nested objects: `DeepPartial`, `DotPaths`, `LeafDotPaths`, `DotPathsWithArrayIndex`, `FlatObject`, `IsPlainObject`, plus `LooseString` for string-literal autocomplete. |
+| [window](./docs/window.md) | Browser DOM helpers: `getCssProperty` reads a computed CSS custom property from an element (defaults to `<html>`).                                      |

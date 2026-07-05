@@ -1,7 +1,8 @@
 # types
 
-Utility types for working with nested objects: deep partials, dot-notation path unions, and object flattening. These are
-**type-only** — import them with `import type` and use them in type positions; they have no runtime value.
+Utility types for working with nested objects (deep partials, dot-notation path unions, object flattening) plus a
+string-literal autocomplete helper. These are **type-only** — import them with `import type` and use them in type
+positions; they have no runtime value.
 
 ```ts
 import type {
@@ -11,6 +12,7 @@ import type {
 	FlatObject,
 	IsPlainObject,
 	LeafDotPaths,
+	LooseString,
 } from "@1nkvi/utils"
 ```
 
@@ -118,4 +120,19 @@ type Flat = FlatObject<Example>
 //   [k: `items.${number}`]: { id: string };
 //   [k: `items.${number}.id`]: string;
 // }
+```
+
+---
+
+## `LooseString<TType>`
+
+A union of a string-literal type `TType` and `string`, so any string is still assignable while editors keep offering the
+known literals as autocomplete suggestions. Written as `TType | (string & {})` — the `& {}` keeps the literal members
+from being absorbed into the wider `string` type.
+
+```ts
+type Theme = "dark" | "light"
+
+const known: LooseString<Theme> = "dark" // autocompletes "dark" | "light"
+const custom: LooseString<Theme> = "system" // any other string is still allowed
 ```
