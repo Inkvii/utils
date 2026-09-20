@@ -52,14 +52,14 @@ export type FlatObject<T> = T extends readonly (infer TElement)[]
 
 type FlatObjectFromKeys<T> = UnionToIntersection<
 	{
-				[Key in keyof T & string]: IsPlainObject<T[Key]> extends true
-					? { [FlatKey in Key]: T[Key] } & {
-							[SubKey in keyof FlatObject<T[Key]> & string as `${Key}.${SubKey}`]: FlatObject<T[Key]>[SubKey]
-						}
-					: T[Key] extends readonly unknown[]
-						? { [FlatKey in Key]: T[Key] } & {
-								[SubKey in keyof FlatObject<T[Key]> & string as `${Key}.${SubKey}`]: FlatObject<T[Key]>[SubKey]
-							}
-						: { [FlatKey in Key]: T[Key] }
-			}[keyof T & string]
-		>
+		[Key in keyof T & string]: IsPlainObject<T[Key]> extends true
+			? { [FlatKey in Key]: T[Key] } & {
+					[SubKey in keyof FlatObject<T[Key]> & string as `${Key}.${SubKey}`]: FlatObject<T[Key]>[SubKey]
+				}
+			: T[Key] extends readonly unknown[]
+				? { [FlatKey in Key]: T[Key] } & {
+						[SubKey in keyof FlatObject<T[Key]> & string as `${Key}.${SubKey}`]: FlatObject<T[Key]>[SubKey]
+					}
+				: { [FlatKey in Key]: T[Key] }
+	}[keyof T & string]
+>

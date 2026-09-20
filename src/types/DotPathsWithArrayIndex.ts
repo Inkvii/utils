@@ -32,5 +32,3 @@ export type DotPathsWithArrayIndex<TObject> = TObject extends unknown[]
 					? (TKey & string) | `${TKey & string}.${DotPathsWithArrayIndex<TObject[TKey]>}`
 					: TKey & string
 		}[keyof TObject]
-
-

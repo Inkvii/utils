@@ -12,17 +12,17 @@ import { getCssProperty } from "@1nkvi/utils"
 
 ## `getCssProperty(propertyName, ref?)`
 
-Reads the computed value of a CSS custom property (or any CSS property) from an element, defaulting to the root
-`<html>` element.
+Reads the computed value of a CSS custom property (or any CSS property) from an element, defaulting to the root `<html>`
+element.
 
 ```ts
 getCssProperty(propertyName: string, ref?: HTMLElement | null): string
 ```
 
-| Parameter      | Type                   | Description                                                                             |
-| -------------- | ---------------------- | --------------------------------------------------------------------------------------- |
-| `propertyName` | `string`               | Full property name, e.g. `--breakpoint-lg`.                                             |
-| `ref`          | `HTMLElement \| null`  | Element to read from. When omitted or `null`, `document.documentElement` (`<html>`) is used. |
+| Parameter      | Type                  | Description                                                                                  |
+| -------------- | --------------------- | -------------------------------------------------------------------------------------------- |
+| `propertyName` | `string`              | Full property name, e.g. `--breakpoint-lg`.                                                  |
+| `ref`          | `HTMLElement \| null` | Element to read from. When omitted or `null`, `document.documentElement` (`<html>`) is used. |
 
 - **Computed, not resolved** — the returned string is the declared value; `calc(...)` and similar expressions are
   returned verbatim, not evaluated (e.g. `calc(0.625rem - 4px)` comes back as-is).

@@ -5,7 +5,7 @@ Helpers for working with plain objects by dot-notation path.
 All exports are available from the package root:
 
 ```ts
-import { replace } from "@1nkvi/utils"
+import { replace, getObjectValue } from "@1nkvi/utils"
 ```
 
 ---
@@ -67,4 +67,65 @@ replace(user, "tags.1", "ops").tags // → ["admin", "ops"]
 
 // The input is never mutated
 user.name // → "Ada"
+```
+
+---
+
+## `getObjectValue(object, key)`
+
+Reads the value at the dot-notation `key`. The return type is derived from the path, so the result is correctly typed
+without a cast — the read counterpart of [`replace`](#replaceobject-key-value).
+
+```ts
+getObjectValue<TObject, TKey extends keyof FlatObject<TObject> & string>(
+	object: TObject,
+	key: TKey
+): FlatObject<TObject>[TKey]
+```
+
+| Parameter | Type      | Description                                                                                                                                                                          |
+| --------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `object`  | `TObject` | The source object. Only read — never mutated.                                                                                                                                        |
+| `key`     | `TKey`    | A dot-notation path into `object`, constrained to the valid paths of [`FlatObject<TObject>`](./types.md#flatobjectt) (intermediate and leaf paths, including numeric array indices). |
+
+- **Inferred return type** — the result is `FlatObject<TObject>[TKey]`, so `getObjectValue(user, "address.zip")` is a
+  `string` and `getObjectValue(user, "address")` is the whole `{ city: string; zip: string }` object.
+- **Type-safe path** — `key` only accepts real paths of `object`; unknown paths are a compile error.
+- **By reference** — objects and arrays are returned as-is (the same reference), not cloned.
+- **Safe on missing values** — a path through a missing container or an out-of-range array index yields `undefined`
+  instead of throwing.
+
+```ts
+type User = {
+	name: string
+	address: { city: string; zip: string }
+	tags: string[]
+	roles: { id: number; label: string }[]
+}
+
+const user: User = {
+	name: "Ada",
+	address: { city: "London", zip: "SW1" },
+	tags: ["admin", "dev"],
+	roles: [
+		{ id: 1, label: "owner" },
+		{ id: 2, label: "editor" },
+	],
+}
+
+// Leaf values — typed as string / number
+getObjectValue(user, "name") // → "Ada"
+getObjectValue(user, "address.city") // → "London"
+getObjectValue(user, "roles.0.id") // → 1
+
+// Whole objects and arrays are valid paths too
+getObjectValue(user, "address") // → { city: "London", zip: "SW1" }
+getObjectValue(user, "roles.1") // → { id: 2, label: "editor" }
+getObjectValue(user, "tags") // → ["admin", "dev"]
+
+// Primitive array element by index
+getObjectValue(user, "tags.1") // → "dev"
+
+// Out-of-range index short-circuits instead of throwing
+getObjectValue(user, "roles.99.label") // → undefined
 ```

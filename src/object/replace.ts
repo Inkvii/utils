@@ -8,7 +8,7 @@ import type { FlatObject } from "@/src"
 export function replace<TObject, TKey extends keyof FlatObject<TObject> & string>(
 	object: TObject,
 	key: TKey,
-	value: FlatObject<TObject>[TKey],
+	value: FlatObject<TObject>[TKey]
 ): TObject {
 	return setDeep(object, key.split("."), value) as TObject
 }

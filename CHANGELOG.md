@@ -1,9 +1,19 @@
 ## Features
+
+- Added `getValueByKey(...)` for reading a nested value by dot-notation path, with the return type inferred from the
+  path
+
+# v0.4.0
+
+## Features
+
 - Added `LooseString` type for string with autocomplete of the union type
 - Added `getCssProperty(...)` for retrieving css variable values
 
 # v0.3.1
+
 ## Refactor
+
 - Strip optional types from result of `DotPaths` and similar
 
 # v0.3.0
