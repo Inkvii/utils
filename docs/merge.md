@@ -4,20 +4,22 @@ Deeply merge partial objects and arrays into one. Give it a list of partials and
 primitives, concatenating and de-duplicating arrays, merging nested objects recursively — while filtering out "empty"
 values like `null`, `undefined` and `""`.
 
-All exports are available from the package root:
+All exports are available under the `mergeUtils` namespace from the package root:
 
 ```ts
-import { merge, mergeArrays, filterValidPrimitiveArrayValues } from "@1nkvi/utils"
+import { mergeUtils } from "@1nkvi/utils"
 ```
+
+Option types live on the same namespace, e.g. `mergeUtils.MergeOptions<TData>`.
 
 ---
 
-## `merge(values, options?)`
+## `mergeUtils.merge(values, options?)`
 
 Deeply merges an array of partial objects (left to right) into a single object.
 
 ```ts
-merge<TData extends object>(values: DeepPartial<TData>[], options?: MergeOptions<TData>): DeepPartial<TData>
+mergeUtils.merge<TData extends object>(values: DeepPartial<TData>[], options?: MergeOptions<TData>): DeepPartial<TData>
 ```
 
 The result is a [_deep partial_](./types.md#deeppartialt) of `TData` — it contains every key seen across the inputs that
@@ -39,27 +41,27 @@ passed validation, but no field is guaranteed to be present.
 
 ```ts
 // Compose keys from several partials
-merge([{ int: 1 }, { float: 2.3 }, { text: "Hello" }])
+mergeUtils.merge([{ int: 1 }, { float: 2.3 }, { text: "Hello" }])
 // → { int: 1, float: 2.3, text: "Hello" }
 
 // Later valid primitives override earlier ones; "" is ignored
-merge([{ int: 1, text: "Hello" }, { int: 2, text: "" }, { int: 3 }])
+mergeUtils.merge([{ int: 1, text: "Hello" }, { int: 2, text: "" }, { int: 3 }])
 // → { int: 3, text: "Hello" }
 
 // Arrays concatenate and de-duplicate
-merge([{ nums: [1, 2, 3] }, { nums: [4] }])
+mergeUtils.merge([{ nums: [1, 2, 3] }, { nums: [4] }])
 // → { nums: [1, 2, 3, 4] }
 
 // Primitive vs. array on the same key — the array wins
-merge([{ text: "first" }, { text: ["second", "third"] }])
+mergeUtils.merge([{ text: "first" }, { text: ["second", "third"] }])
 // → { text: ["second", "third"] }
 
 // ...unless you opt into folding the single value in
-merge([{ text: "first" }, { text: ["second", "third"] }], { enableSingleValueArrays: true })
+mergeUtils.merge([{ text: "first" }, { text: ["second", "third"] }], { enableSingleValueArrays: true })
 // → { text: ["first", "second", "third"] }
 
 // Nested objects and arrays of objects merge recursively
-merge([{ node: [{ text: "A", children: [{ text: "A.1" }] }] }, { node: [{ int: 20 }] }])
+mergeUtils.merge([{ node: [{ text: "A", children: [{ text: "A.1" }] }] }, { node: [{ int: 20 }] }])
 // → { node: [{ text: "A", children: [{ text: "A.1" }] }, { int: 20 }] }
 ```
 
@@ -76,30 +78,30 @@ merge([{ node: [{ text: "A", children: [{ text: "A.1" }] }] }, { node: [{ int: 2
 
 ---
 
-## `mergeArrays(arrays, options?)`
+## `mergeUtils.mergeArrays(arrays, options?)`
 
 Flattens several arrays into one. By default, primitive values are de-duplicated and invalid primitives are dropped.
 De-duplication only applies when the flattened result contains **no** objects or nested arrays — mixed/object arrays are
 returned concatenated as-is.
 
 ```ts
-mergeArrays<TData>(arrays: TData[][], options?: MergeArraysOptions<TData>): TData[]
+mergeUtils.mergeArrays<TData>(arrays: TData[][], options?: MergeArraysOptions<TData>): TData[]
 ```
 
 ```ts
-mergeArrays([["first"], ["second"], ["third", "fourth"]])
+mergeUtils.mergeArrays([["first"], ["second"], ["third", "fourth"]])
 // → ["first", "second", "third", "fourth"]
 
 // Duplicates removed
-mergeArrays([["first"], ["first", "second"]])
+mergeUtils.mergeArrays([["first"], ["first", "second"]])
 // → ["first", "second"]
 
 // Invalid primitives ("" here) are filtered out
-mergeArrays([["first"], [""]])
+mergeUtils.mergeArrays([["first"], [""]])
 // → ["first"]
 
 // Keep everything as-is
-mergeArrays([["first"], ["first", ""]], { disableDistinctPrimitiveFilter: true })
+mergeUtils.mergeArrays([["first"], ["first", ""]], { disableDistinctPrimitiveFilter: true })
 // → ["first", "first", ""]
 ```
 
@@ -115,16 +117,16 @@ mergeArrays([["first"], ["first", ""]], { disableDistinctPrimitiveFilter: true }
 
 ---
 
-## `filterValidPrimitiveArrayValues(flatArray, options?)`
+## `mergeUtils.filterValidPrimitiveArrayValues(flatArray, options?)`
 
 Takes a single flat array, removes invalid primitives, and de-duplicates the rest.
 
 ```ts
-filterValidPrimitiveArrayValues<TData>(flatArray: TData[], options?: FilterValidPrimitiveArrayValuesOptions): TData[]
+mergeUtils.filterValidPrimitiveArrayValues<TData>(flatArray: TData[], options?: FilterValidPrimitiveArrayValuesOptions): TData[]
 ```
 
 ```ts
-filterValidPrimitiveArrayValues(["first", "", null, "second", "second"])
+mergeUtils.filterValidPrimitiveArrayValues(["first", "", null, "second", "second"])
 // → ["first", "second"]
 ```
 
@@ -151,13 +153,13 @@ built-in checks, and a validator returning `true` marks the value for removal:
 
 ```ts
 // Drop any string that starts with a hash
-merge([{ tag: "release" }, { tag: "#draft" }], {
+mergeUtils.merge([{ tag: "release" }, { tag: "#draft" }], {
 	validators: [(v) => typeof v === "string" && v.startsWith("#")],
 })
 // → { tag: "release" }
 
 // Filter out specific enum-like values
-mergeArrays([["A", "keep", "B"]], {
+mergeUtils.mergeArrays([["A", "keep", "B"]], {
 	validators: [(value) => ["A", "B", "C"].includes(value)],
 })
 // → ["keep"]

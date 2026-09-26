@@ -2,22 +2,22 @@
 
 Helpers for working with plain objects by dot-notation path.
 
-All exports are available from the package root:
+All exports are available under the `objectUtils` namespace from the package root:
 
 ```ts
-import { replace, getObjectValue } from "@1nkvi/utils"
+import { objectUtils } from "@1nkvi/utils"
 ```
 
 ---
 
-## `replace(object, key, value)`
+## `objectUtils.replace(object, key, value)`
 
 Immutably sets `value` at the dot-notation `key` and returns a **new** object — the input is never mutated. Every
 container along the path is cloned (arrays for numeric segments, objects otherwise), so a single element or key is
 replaced without touching its siblings.
 
 ```ts
-replace<TObject, TKey extends keyof FlatObject<TObject> & string>(
+objectUtils.replace<TObject, TKey extends keyof FlatObject<TObject> & string>(
 	object: TObject,
 	key: TKey,
 	value: FlatObject<TObject>[TKey],
@@ -54,16 +54,16 @@ const user: User = {
 }
 
 // Replace a leaf value
-replace(user, "name", "Ada Lovelace").name // → "Ada Lovelace"
+objectUtils.replace(user, "name", "Ada Lovelace").name // → "Ada Lovelace"
 
 // Replace a nested value — siblings untouched
-replace(user, "address.city", "Paris").address // → { city: "Paris", zip: "SW1" }
+objectUtils.replace(user, "address.city", "Paris").address // → { city: "Paris", zip: "SW1" }
 
 // Replace one array element field by index
-replace(user, "roles.0.label", "admin").roles // → [{ id: 1, label: "admin" }, { id: 2, label: "editor" }]
+objectUtils.replace(user, "roles.0.label", "admin").roles // → [{ id: 1, label: "admin" }, { id: 2, label: "editor" }]
 
 // Replace a primitive array element
-replace(user, "tags.1", "ops").tags // → ["admin", "ops"]
+objectUtils.replace(user, "tags.1", "ops").tags // → ["admin", "ops"]
 
 // The input is never mutated
 user.name // → "Ada"
@@ -71,13 +71,13 @@ user.name // → "Ada"
 
 ---
 
-## `getObjectValue(object, key)`
+## `objectUtils.get(object, key)`
 
 Reads the value at the dot-notation `key`. The return type is derived from the path, so the result is correctly typed
-without a cast — the read counterpart of [`replace`](#replaceobject-key-value).
+without a cast — the read counterpart of [`objectUtils.replace`](#objectutilsreplaceobject-key-value).
 
 ```ts
-getObjectValue<TObject, TKey extends keyof FlatObject<TObject> & string>(
+objectUtils.get<TObject, TKey extends keyof FlatObject<TObject> & string>(
 	object: TObject,
 	key: TKey
 ): FlatObject<TObject>[TKey]
@@ -88,8 +88,8 @@ getObjectValue<TObject, TKey extends keyof FlatObject<TObject> & string>(
 | `object`  | `TObject` | The source object. Only read — never mutated.                                                                                                                                        |
 | `key`     | `TKey`    | A dot-notation path into `object`, constrained to the valid paths of [`FlatObject<TObject>`](./types.md#flatobjectt) (intermediate and leaf paths, including numeric array indices). |
 
-- **Inferred return type** — the result is `FlatObject<TObject>[TKey]`, so `getObjectValue(user, "address.zip")` is a
-  `string` and `getObjectValue(user, "address")` is the whole `{ city: string; zip: string }` object.
+- **Inferred return type** — the result is `FlatObject<TObject>[TKey]`, so `objectUtils.get(user, "address.zip")` is a
+  `string` and `objectUtils.get(user, "address")` is the whole `{ city: string; zip: string }` object.
 - **Type-safe path** — `key` only accepts real paths of `object`; unknown paths are a compile error.
 - **By reference** — objects and arrays are returned as-is (the same reference), not cloned.
 - **Safe on missing values** — a path through a missing container or an out-of-range array index yields `undefined`
@@ -114,18 +114,18 @@ const user: User = {
 }
 
 // Leaf values — typed as string / number
-getObjectValue(user, "name") // → "Ada"
-getObjectValue(user, "address.city") // → "London"
-getObjectValue(user, "roles.0.id") // → 1
+objectUtils.get(user, "name") // → "Ada"
+objectUtils.get(user, "address.city") // → "London"
+objectUtils.get(user, "roles.0.id") // → 1
 
 // Whole objects and arrays are valid paths too
-getObjectValue(user, "address") // → { city: "London", zip: "SW1" }
-getObjectValue(user, "roles.1") // → { id: 2, label: "editor" }
-getObjectValue(user, "tags") // → ["admin", "dev"]
+objectUtils.get(user, "address") // → { city: "London", zip: "SW1" }
+objectUtils.get(user, "roles.1") // → { id: 2, label: "editor" }
+objectUtils.get(user, "tags") // → ["admin", "dev"]
 
 // Primitive array element by index
-getObjectValue(user, "tags.1") // → "dev"
+objectUtils.get(user, "tags.1") // → "dev"
 
 // Out-of-range index short-circuits instead of throwing
-getObjectValue(user, "roles.99.label") // → undefined
+objectUtils.get(user, "roles.99.label") // → undefined
 ```

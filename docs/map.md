@@ -2,21 +2,21 @@
 
 Helpers for working with `Map` instances.
 
-All exports are available from the package root:
+All exports are available under the `mapUtils` namespace from the package root:
 
 ```ts
-import { upsert } from "@1nkvi/utils"
+import { mapUtils } from "@1nkvi/utils"
 ```
 
 ---
 
-## `upsert(map, key, value, fn)`
+## `mapUtils.upsert(map, key, value, fn)`
 
 Inserts `value` at `key`, or combines it with the existing value using `fn` when the key is already present. The map is
 **mutated in place** and the stored value is returned.
 
 ```ts
-upsert<TKey, TValue>(
+mapUtils.upsert<TKey, TValue>(
 	map: Map<TKey, TValue>,
 	key: TKey,
 	value: TValue,
@@ -37,14 +37,14 @@ upsert<TKey, TValue>(
 ```ts
 // New key — value is set as-is
 const counts = new Map<string, string>()
-upsert(counts, "first", "1", (prev, value) => prev + value) // → "1"
+mapUtils.upsert(counts, "first", "1", (prev, value) => prev + value) // → "1"
 
 // Existing key — combine via fn
 counts.set("first", "1")
-upsert(counts, "first", "2", (prev, value) => prev + value) // → "12"
+mapUtils.upsert(counts, "first", "2", (prev, value) => prev + value) // → "12"
 
 // Append to an array value
 const lists = new Map<string, string[]>()
 lists.set("a", ["1", "2"])
-upsert(lists, "a", ["3"], (prev, value) => [...prev, ...value]) // → ["1", "2", "3"]
+mapUtils.upsert(lists, "a", ["3"], (prev, value) => [...prev, ...value]) // → ["1", "2", "3"]
 ```

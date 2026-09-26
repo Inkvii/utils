@@ -2,21 +2,21 @@
 
 Browser helpers that read from the DOM. These require a `window`/`document`, so they only run in the browser.
 
-All exports are available from the package root:
+All exports are available under the `windowUtils` namespace from the package root:
 
 ```ts
-import { getCssProperty } from "@1nkvi/utils"
+import { windowUtils } from "@1nkvi/utils"
 ```
 
 ---
 
-## `getCssProperty(propertyName, ref?)`
+## `windowUtils.getCssProperty(propertyName, ref?)`
 
 Reads the computed value of a CSS custom property (or any CSS property) from an element, defaulting to the root `<html>`
 element.
 
 ```ts
-getCssProperty(propertyName: string, ref?: HTMLElement | null): string
+windowUtils.getCssProperty(propertyName: string, ref?: HTMLElement | null): string
 ```
 
 | Parameter      | Type                  | Description                                                                                  |
@@ -29,7 +29,7 @@ getCssProperty(propertyName: string, ref?: HTMLElement | null): string
 - **Returns a string** — an unset property yields an empty string, matching `getPropertyValue`.
 
 ```ts
-getCssProperty("--breakpoint-lg") // → "64rem"
-getCssProperty("--radius-sm") // → "calc(0.625rem - 4px)"
-getCssProperty("--card-gap", cardEl) // → reads the variable as seen by `cardEl`
+windowUtils.getCssProperty("--breakpoint-lg") // → "64rem"
+windowUtils.getCssProperty("--radius-sm") // → "calc(0.625rem - 4px)"
+windowUtils.getCssProperty("--card-gap", cardEl) // → reads the variable as seen by `cardEl`
 ```

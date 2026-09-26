@@ -1,12 +1,25 @@
+## Features
+
+- Added `IsOpaque` type, resolving to `true` for types without statically known keys (`any`, `unknown`, `object`, `{}`)
+
+## Refactor
+
+- **Breaking:** functions are no longer exported flat from the package root. Each module is exported as a namespace —
+  `arrayUtils`, `guardUtils`, `mapUtils`, `mergeUtils`, `objectUtils`, `randomUtils`, `windowUtils` — e.g.
+  `objectUtils.replace(...)`. Option types moved with them (`mergeUtils.MergeOptions`); utility types from `types` stay
+  root exports
+- **Breaking:** renamed `createArray` → `arrayUtils.create`, `createRangeArray` → `arrayUtils.createFromRange` and
+  `getValueByKey` → `objectUtils.get`
+
 ## Fixes
 
 - `FlatObject` now indexes arrays with `${bigint}` instead of `${number}`. Nested array paths such as `"matrix.0.1"` no
   longer resolve to an intersection of both depths, and non-integer indices (`"items.1.5"`, `"items.1e3"`) are rejected
-  by `get` and `replace`
+  by `objectUtils.get` and `objectUtils.replace`
 - `DotPathsWithArrayIndex` now emits `${bigint}` array segments instead of `${number}`, so non-integer indices
   (`"items.1.5"`) are no longer valid paths
 - `FlatObject` of a type without known keys (`object`, `{}`, `unknown`, `any`) now falls back to
-  `Record<string, unknown>` instead of an empty key set, so `getValueByKey(input as object, name as string)` compiles
+  `Record<string, unknown>` instead of an empty key set, so `objectUtils.get(input as object, name as string)` compiles
   and returns `unknown`
 - `DotPaths`, `LeafDotPaths` and `DotPathsWithArrayIndex` apply the same fallback: types without known keys produce
   `string` instead of `never`, and an opaque nested field yields `` `field.${string}` `` — previously `LeafDotPaths`

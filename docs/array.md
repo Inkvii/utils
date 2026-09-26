@@ -3,21 +3,21 @@
 Small helpers for creating and normalizing arrays: wrap a single value into an array, or build numeric index/range
 arrays.
 
-All exports are available from the package root:
+All exports are available under the `arrayUtils` namespace from the package root:
 
 ```ts
-import { tuplify, create, createRangeArray } from "@1nkvi/utils"
+import { arrayUtils } from "@1nkvi/utils"
 ```
 
 ---
 
-## `tuplify(value)`
+## `arrayUtils.tuplify(value)`
 
 Wraps a single value into a one-element array, and leaves an existing array untouched. Handy for normalizing a `T | T[]`
 value into `T[]`.
 
 ```ts
-tuplify<TData>(value: TData | TData[]): TData[]
+arrayUtils.tuplify<TData>(value: TData | TData[]): TData[]
 ```
 
 | Parameter | Type               | Description                                             |
@@ -29,25 +29,25 @@ tuplify<TData>(value: TData | TData[]): TData[]
 - Falsy primitives (`""`, `0`, `false`, `null`, `undefined`) are still wrapped, not dropped.
 
 ```ts
-tuplify("a") // → ["a"]
-tuplify(1) // → [1]
-tuplify(false) // → [false]
-tuplify("") // → [""]
-tuplify(null) // → [null]
-tuplify({ a: 1 }) // → [{ a: 1 }]
+arrayUtils.tuplify("a") // → ["a"]
+arrayUtils.tuplify(1) // → [1]
+arrayUtils.tuplify(false) // → [false]
+arrayUtils.tuplify("") // → [""]
+arrayUtils.tuplify(null) // → [null]
+arrayUtils.tuplify({ a: 1 }) // → [{ a: 1 }]
 
-tuplify(["a", "b"]) // → ["a", "b"]  (same reference)
-tuplify([]) // → []
+arrayUtils.tuplify(["a", "b"]) // → ["a", "b"]  (same reference)
+arrayUtils.tuplify([]) // → []
 ```
 
 ---
 
-## `create(length, startIndex?)`
+## `arrayUtils.create(length, startIndex?)`
 
 Creates an array of consecutive integers, starting at `startIndex`. Useful for quickly creating skeleton placeholders.
 
 ```ts
-create(length: number, startIndex?: number): number[]
+arrayUtils.create(length: number, startIndex?: number): number[]
 ```
 
 | Parameter    | Type     | Default | Description                 |
@@ -56,18 +56,18 @@ create(length: number, startIndex?: number): number[]
 | `startIndex` | `number` | `0`     | Value of the first element. |
 
 ```ts
-create(5) // → [0, 1, 2, 3, 4]
-create(5, 11) // → [11, 12, 13, 14, 15]
+arrayUtils.create(5) // → [0, 1, 2, 3, 4]
+arrayUtils.create(5, 11) // → [11, 12, 13, 14, 15]
 ```
 
 ---
 
-## `createRangeArray(min, max)`
+## `arrayUtils.createFromRange(min, max)`
 
 Returns an array of all integers in the inclusive interval `<min, max>`.
 
 ```ts
-createRangeArray(min: number, max: number): number[]
+arrayUtils.createFromRange(min: number, max: number): number[]
 ```
 
 | Parameter | Type     | Description                |
@@ -79,7 +79,7 @@ createRangeArray(min: number, max: number): number[]
 - Negative bounds are supported.
 
 ```ts
-createRangeArray(-2, 1) // → [-2, -1, 0, 1]
-createRangeArray(7, 12) // → [7, 8, 9, 10, 11, 12]
-createRangeArray(5, 5) // → [5]
+arrayUtils.createFromRange(-2, 1) // → [-2, -1, 0, 1]
+arrayUtils.createFromRange(7, 12) // → [7, 8, 9, 10, 11, 12]
+arrayUtils.createFromRange(5, 5) // → [5]
 ```

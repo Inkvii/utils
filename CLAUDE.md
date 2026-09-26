@@ -1,6 +1,7 @@
 File in this folder is located in root folder. You are not allowed to read or modify anything that is not in this folder
 
 ## Package Manager & Runtime Rules
+
 - NEVER use `python`, `node`, `npm`, or `npx` commands for any purpose (code exploration, formatting, checking, running
   scripts, etc.).
 - Always use `pnpm` as the package manager.
@@ -14,4 +15,3 @@ File in this folder is located in root folder. You are not allowed to read or mo
 
 - Always ask clarifying questions when requirements are ambiguous or underspecified before starting implementation, to
   improve understanding and avoid misunderstandings.
-

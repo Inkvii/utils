@@ -10,6 +10,7 @@ import type {
 	DotPaths,
 	DotPathsWithArrayIndex,
 	FlatObject,
+	IsOpaque,
 	IsPlainObject,
 	LeafDotPaths,
 	LooseString,
@@ -21,7 +22,7 @@ import type {
 ## `DeepPartial<T>`
 
 Recursively makes every key of an object (and of nested objects/arrays) optional. Used as the input and output type of
-[`merge`](./merge.md#mergevalues-options).
+[`mergeUtils.merge`](./merge.md#mergeutilsmergevalues-options).
 
 ```ts
 type Config = { db: { host: string; port: number }; tags: string[] }
@@ -45,6 +46,23 @@ IsPlainObject<{ a: 1 }> // → true
 IsPlainObject<string[]> // → false
 IsPlainObject<() => void> // → false
 IsPlainObject<string> // → false
+```
+
+---
+
+## `IsOpaque<T>`
+
+Resolves to `true` for types with no statically known keys (`any`, `unknown`, `object`, `{}`); otherwise `false`. Such
+types cannot be walked, so the dot-path types use it to fall back to accepting any string below them instead of
+producing `never`.
+
+```ts
+IsOpaque<any> // → true
+IsOpaque<unknown> // → true
+IsOpaque<object> // → true
+IsOpaque<{}> // → true
+IsOpaque<{ a: 1 }> // → false
+IsOpaque<string[]> // → false
 ```
 
 ---
@@ -114,7 +132,8 @@ index (`${bigint}`), so a whole nested object/array can be addressed as safely a
 `${number}` means only integer segments address elements — `"items.1.5"` is rejected, and in nested arrays
 `"matrix.0.1"` resolves to the element, not an intersection of both depths. Negative (`"items.-1"`) and hex
 (`"items.0x1"`) indices still type-check, as a template literal cannot exclude them. Used by
-[`replace`](./object.md#replaceobject-key-value) and `get` to type their `key`.
+[`objectUtils.replace`](./object.md#objectutilsreplaceobject-key-value) and
+[`objectUtils.get`](./object.md#objectutilsgetobject-key) to type their `key`.
 
 Types without statically known keys (`object`, `{}`, `unknown`, `any`) cannot be flattened and fall back to
 `Record<string, unknown>` — any string path is accepted and its value is `unknown`. The same applies below an opaque
