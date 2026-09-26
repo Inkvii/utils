@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { upsert } from "@/src"
+import { upsert } from "~/map"
 
 describe("upsert", () => {
 	it("Empty map", () => {

@@ -1,11 +1,11 @@
-import type { FlatObject } from "@/src"
+import type { FlatObject } from "~/types/FlatObject"
 
 /**
  * Reads a single deeply nested value, addressed by a dot‑notation path. The
  * return type is derived from {@link FlatObject}, so it matches the type at
  * `key` exactly — both leaf and intermediate (object/array) paths are allowed.
  */
-export function getValueByKey<TObject, TKey extends keyof FlatObject<TObject> & string>(
+export function get<TObject, TKey extends keyof FlatObject<TObject> & string>(
 	object: TObject,
 	key: TKey
 ): FlatObject<TObject>[TKey] {

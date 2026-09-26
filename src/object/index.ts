@@ -1,2 +1,2 @@
-export * from "./getValueByKey"
+export * from "./get"
 export * from "./replace"

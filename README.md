@@ -42,11 +42,11 @@ merge([{ id: 1 }, { name: "Hello" }, { name: "World" }])
 
 | Module                     | What it does                                                                                                                                                                              |
 | -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [array](./docs/array.md)   | Create and normalize arrays: `tuplify` a value into an array, or build index/range arrays with `createArray` and `createRangeArray`.                                                      |
+| [array](./docs/array.md)   | Create and normalize arrays: `tuplify` a value into an array, or build index/range arrays with `create` and `createFromRange`.                                                      |
 | [guard](./docs/guard.md)   | Type guards and runtime checks: `isPlainObject`, `isEmptyObject`, `isEmptyArray`, `isInvalidNumber`, plus `triggerExhaustiveSwitch` for exhaustiveness.                                   |
 | [map](./docs/map.md)       | `upsert` a `Map` entry — insert a value, or combine it with the existing one via a callback.                                                                                              |
 | [merge](./docs/merge.md)   | Deeply `merge` partial objects, `mergeArrays` with de-duplication, and `filterValidPrimitiveArrayValues`, all skipping "empty" values.                                                    |
-| [object](./docs/object.md) | Address a nested value by dot-notation path, type-safely: `replace` it immutably without touching its siblings, or read it with `getValueByKey`.                                         |
+| [object](./docs/object.md) | Address a nested value by dot-notation path, type-safely: `replace` it immutably without touching its siblings, or read it with `get`.                                         |
 | [random](./docs/random.md) | Random integers: `random` within inclusive/exclusive bounds, and `randomMarginalChange` to nudge a value by fixed and percentage margins.                                                 |
 | [types](./docs/types.md)   | Utility types for nested objects: `DeepPartial`, `DotPaths`, `LeafDotPaths`, `DotPathsWithArrayIndex`, `FlatObject`, `IsPlainObject`, plus `LooseString` for string-literal autocomplete. |
 | [window](./docs/window.md) | Browser DOM helpers: `getCssProperty` reads a computed CSS custom property from an element (defaults to `<html>`).                                                                        |

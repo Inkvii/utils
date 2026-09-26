@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { getValueByKey } from "~/object/getValueByKey"
+import { get } from "~/object/get"
 
 type Test = {
 	a: string
@@ -36,47 +36,47 @@ function createObject(): Test {
 
 describe("getObjectValue", () => {
 	it("reads a top-level primitive", () => {
-		expect(getValueByKey(createObject(), "a")).toBe("Hello")
-		expect(getValueByKey(createObject(), "b")).toBe(12)
-		expect(getValueByKey(createObject(), "c")).toBe(false)
+		expect(get(createObject(), "a")).toBe("Hello")
+		expect(get(createObject(), "b")).toBe(12)
+		expect(get(createObject(), "c")).toBe(false)
 	})
 
 	it("reads a nested value", () => {
-		expect(getValueByKey(createObject(), "nested.value")).toBe("Hey there")
-		expect(getValueByKey(createObject(), "nested.deep.here")).toBe(true)
+		expect(get(createObject(), "nested.value")).toBe("Hey there")
+		expect(get(createObject(), "nested.deep.here")).toBe(true)
 	})
 
 	it("reads a single array element field by index", () => {
-		expect(getValueByKey(createObject(), "nested.arr.0.key")).toBe("an")
-		expect(getValueByKey(createObject(), "nested.arr.1.value")).toBe("No")
+		expect(get(createObject(), "nested.arr.0.key")).toBe("an")
+		expect(get(createObject(), "nested.arr.1.value")).toBe("No")
 	})
 
 	it("reads a whole array element", () => {
-		expect(getValueByKey(createObject(), "nested.arr.0")).toEqual({ key: "an", value: "ANO" })
+		expect(get(createObject(), "nested.arr.0")).toEqual({ key: "an", value: "ANO" })
 	})
 
 	it("reads a primitive array element", () => {
-		expect(getValueByKey(createObject(), "d.1")).toBe("second")
+		expect(get(createObject(), "d.1")).toBe("second")
 	})
 
 	it("reads a whole nested object", () => {
-		expect(getValueByKey(createObject(), "nested.deep")).toEqual({ here: true })
-		expect(getValueByKey(createObject(), "d")).toEqual(["first", "second"])
+		expect(get(createObject(), "nested.deep")).toEqual({ here: true })
+		expect(get(createObject(), "d")).toEqual(["first", "second"])
 	})
 
 	it("returns the same reference as the source", () => {
 		const original = createObject()
-		expect(getValueByKey(original, "nested.arr")).toBe(original.nested.arr)
-		expect(getValueByKey(original, "nested.arr.0")).toBe(original.nested.arr[0])
+		expect(get(original, "nested.arr")).toBe(original.nested.arr)
+		expect(get(original, "nested.arr.0")).toBe(original.nested.arr[0])
 	})
 
 	it("returns undefined for a missing array index instead of throwing", () => {
-		expect(getValueByKey(createObject(), "nested.arr.99.key")).toBeUndefined()
+		expect(get(createObject(), "nested.arr.99.key")).toBeUndefined()
 	})
 
 	it("does not mutate the input", () => {
 		const original = createObject()
-		getValueByKey(original, "nested.arr.0.key")
+		get(original, "nested.arr.0.key")
 
 		expect(original).toEqual(createObject())
 	})

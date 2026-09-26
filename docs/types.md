@@ -114,7 +114,7 @@ index (`${bigint}`), so a whole nested object/array can be addressed as safely a
 `${number}` means only integer segments address elements — `"items.1.5"` is rejected, and in nested arrays
 `"matrix.0.1"` resolves to the element, not an intersection of both depths. Negative (`"items.-1"`) and hex
 (`"items.0x1"`) indices still type-check, as a template literal cannot exclude them. Used by
-[`replace`](./object.md#replaceobject-key-value) and `getValueByKey` to type their `key`.
+[`replace`](./object.md#replaceobject-key-value) and `get` to type their `key`.
 
 Types without statically known keys (`object`, `{}`, `unknown`, `any`) cannot be flattened and fall back to
 `Record<string, unknown>` — any string path is accepted and its value is `unknown`. The same applies below an opaque

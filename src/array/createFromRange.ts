@@ -6,6 +6,6 @@
  * createRangeArray(-2, 1) // [-2, -1, 0, 1]
  * ```
  */
-export function createRangeArray(min: number, max: number) {
+export function createFromRange(min: number, max: number) {
 	return Array.from({ length: max - min + 1 }, (_, i) => min + i)
 }

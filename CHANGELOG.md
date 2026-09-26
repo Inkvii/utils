@@ -2,7 +2,7 @@
 
 - `FlatObject` now indexes arrays with `${bigint}` instead of `${number}`. Nested array paths such as `"matrix.0.1"` no
   longer resolve to an intersection of both depths, and non-integer indices (`"items.1.5"`, `"items.1e3"`) are rejected
-  by `getValueByKey` and `replace`
+  by `get` and `replace`
 - `DotPathsWithArrayIndex` now emits `${bigint}` array segments instead of `${number}`, so non-integer indices
   (`"items.1.5"`) are no longer valid paths
 - `FlatObject` of a type without known keys (`object`, `{}`, `unknown`, `any`) now falls back to

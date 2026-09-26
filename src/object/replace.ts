@@ -1,4 +1,4 @@
-import type { FlatObject } from "@/src"
+import type { FlatObject } from "~/types/FlatObject"
 
 /**
  * Replaces a single deeply nested value, addressed by a dot‑notation path, and

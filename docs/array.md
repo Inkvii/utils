@@ -6,7 +6,7 @@ arrays.
 All exports are available from the package root:
 
 ```ts
-import { tuplify, createArray, createRangeArray } from "@1nkvi/utils"
+import { tuplify, create, createRangeArray } from "@1nkvi/utils"
 ```
 
 ---
@@ -42,12 +42,12 @@ tuplify([]) // → []
 
 ---
 
-## `createArray(length, startIndex?)`
+## `create(length, startIndex?)`
 
 Creates an array of consecutive integers, starting at `startIndex`. Useful for quickly creating skeleton placeholders.
 
 ```ts
-createArray(length: number, startIndex?: number): number[]
+create(length: number, startIndex?: number): number[]
 ```
 
 | Parameter    | Type     | Default | Description                 |
@@ -56,8 +56,8 @@ createArray(length: number, startIndex?: number): number[]
 | `startIndex` | `number` | `0`     | Value of the first element. |
 
 ```ts
-createArray(5) // → [0, 1, 2, 3, 4]
-createArray(5, 11) // → [11, 12, 13, 14, 15]
+create(5) // → [0, 1, 2, 3, 4]
+create(5, 11) // → [11, 12, 13, 14, 15]
 ```
 
 ---

@@ -1,6 +1,6 @@
 import { random, randomMarginalChange, type RandomOptions } from "./random"
 import { describe, expect, it } from "vitest"
-import { createRangeArray } from "~/array/createRangeArray"
+import { createFromRange } from "~/array/createFromRange"
 
 describe("random", () => {
 	it.each([
@@ -103,7 +103,7 @@ describe("random", () => {
 describe("createRange", () => {
 	it("Should create range -2 to 2 inclusive", () => {
 		const expected = [-2, -1, 0, 1, 2]
-		const actual = createRangeArray(-2, 2)
+		const actual = createFromRange(-2, 2)
 
 		expect(actual).toStrictEqual(expected)
 	})
@@ -123,7 +123,7 @@ describe("randomMarginalChange", () => {
 
 function initializeDistribution(min: number, max: number) {
 	const distribution = new Map<number, number>()
-	for (const number of createRangeArray(min, max)) {
+	for (const number of createFromRange(min, max)) {
 		distribution.set(number, 0)
 	}
 	return distribution

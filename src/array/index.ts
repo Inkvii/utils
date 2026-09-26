@@ -1,3 +1,3 @@
 export * from "./tuplify"
-export * from "./createArray"
-export * from "./createRangeArray"
+export * from "./create"
+export * from "./createFromRange"

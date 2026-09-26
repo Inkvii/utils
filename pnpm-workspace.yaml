@@ -1,3 +1,6 @@
 allowBuilds:
   esbuild: false
 minimumReleaseAge: 7200
+update:
+  ignoreDeps:
+    - "@types/node"
