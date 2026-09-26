@@ -1,3 +1,4 @@
+import type { IsOpaque } from "~/types/IsOpaque"
 import type { IsPlainObject } from "~/types/IsPlainObject"
 
 /**
@@ -15,7 +16,7 @@ type UnionToIntersection<TUnion> = (TUnion extends unknown ? (arg: TUnion) => vo
  * values are the corresponding values. Both intermediate paths (objects and
  * arrays) and leaf paths are emitted, so a whole nested object/array can be
  * addressed just as safely as a leaf. Arrays are descended using a generic
- * numeric index (`${number}`), so element paths remain type‑safe.
+ * numeric index (`${bigint}`), so element paths remain type‑safe.
  *
  * @typeParam T - The object type to flatten.
  *
@@ -33,22 +34,25 @@ type UnionToIntersection<TUnion> = (TUnion extends unknown ? (arg: TUnion) => vo
  * //   "b": { c: number };
  * //   "b.c": number;
  * //   "items": { id: string }[];
- * //   [k: `items.${number}`]: { id: string };
- * //   [k: `items.${number}.id`]: string;
+ * //   [k: `items.${bigint}`]: { id: string };
+ * //   [k: `items.${bigint}.id`]: string;
  * // }
  * ```
  */
-export type FlatObject<T> = T extends readonly (infer TElement)[]
-	? IsPlainObject<TElement> extends true
-		? { [Index in `${number}`]: TElement } & {
-				[SubKey in keyof FlatObject<TElement> & string as `${number}.${SubKey}`]: FlatObject<TElement>[SubKey]
-			}
-		: TElement extends readonly unknown[]
-			? { [Index in `${number}`]: TElement } & {
-					[SubKey in keyof FlatObject<TElement> & string as `${number}.${SubKey}`]: FlatObject<TElement>[SubKey]
-				}
-			: { [Index in `${number}`]: TElement }
-	: FlatObjectFromKeys<Required<T>>
+export type FlatObject<T> =
+	IsOpaque<T> extends true
+		? Record<string, unknown>
+		: T extends readonly (infer TElement)[]
+			? IsPlainObject<TElement> extends true
+				? { [Index in `${bigint}`]: TElement } & {
+						[SubKey in keyof FlatObject<TElement> & string as `${bigint}.${SubKey}`]: FlatObject<TElement>[SubKey]
+					}
+				: TElement extends readonly unknown[]
+					? { [Index in `${bigint}`]: TElement } & {
+							[SubKey in keyof FlatObject<TElement> & string as `${bigint}.${SubKey}`]: FlatObject<TElement>[SubKey]
+						}
+					: { [Index in `${bigint}`]: TElement }
+			: FlatObjectFromKeys<Required<T>>
 
 type FlatObjectFromKeys<T> = UnionToIntersection<
 	{

@@ -1,3 +1,4 @@
+import type { IsOpaque } from "~/types/IsOpaque"
 import type { IsPlainObject } from "~/types/IsPlainObject"
 
 /**
@@ -17,18 +18,21 @@ import type { IsPlainObject } from "~/types/IsPlainObject"
  * // "users" | "users.0" | "users.0.name"
  * ```
  */
-export type DotPathsWithArrayIndex<TObject> = TObject extends unknown[]
-	? TObject extends (infer TElement)[]
-		? TElement extends unknown[]
-			? `${number}` | `${number}.${DotPathsWithArrayIndex<TElement>}`
-			: IsPlainObject<TElement> extends true
-				? `${number}` | `${number}.${DotPathsWithArrayIndex<TElement>}`
-				: `${number}`
-		: never
-	: {
-			[TKey in keyof TObject]-?: TObject[TKey] extends unknown[]
-				? (TKey & string) | `${TKey & string}.${DotPathsWithArrayIndex<TObject[TKey]>}`
-				: IsPlainObject<TObject[TKey]> extends true
-					? (TKey & string) | `${TKey & string}.${DotPathsWithArrayIndex<TObject[TKey]>}`
-					: TKey & string
-		}[keyof TObject]
+export type DotPathsWithArrayIndex<TObject> =
+	IsOpaque<TObject> extends true
+		? string
+		: TObject extends unknown[]
+			? TObject extends (infer TElement)[]
+				? TElement extends unknown[]
+					? `${bigint}` | `${bigint}.${DotPathsWithArrayIndex<TElement>}`
+					: IsPlainObject<TElement> extends true
+						? `${bigint}` | `${bigint}.${DotPathsWithArrayIndex<TElement>}`
+						: `${bigint}`
+				: never
+			: {
+					[TKey in keyof TObject]-?: TObject[TKey] extends unknown[]
+						? (TKey & string) | `${TKey & string}.${DotPathsWithArrayIndex<TObject[TKey]>}`
+						: IsPlainObject<TObject[TKey]> extends true
+							? (TKey & string) | `${TKey & string}.${DotPathsWithArrayIndex<TObject[TKey]>}`
+							: TKey & string
+				}[keyof TObject]

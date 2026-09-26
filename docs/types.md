@@ -62,6 +62,14 @@ type Paths = DotPaths<Example>
 // "a" | "b" | "b.c" | "b.c.d"
 ```
 
+Types without statically known keys (`object`, `{}`, `unknown`, `any`) cannot be walked, so they fall back to `string` —
+at the top level and below an opaque nested field. This applies to `LeafDotPaths` and `DotPathsWithArrayIndex` too.
+
+```ts
+type Paths = DotPaths<{ a: string; meta: object }>
+// "a" | "meta" | `meta.${string}`
+```
+
 ---
 
 ## `LeafDotPaths<T>`
@@ -83,8 +91,9 @@ type Paths = LeafDotPaths<Example>
 
 ## `DotPathsWithArrayIndex<T>`
 
-Like `DotPaths`, but also descends into arrays, emitting a generic numeric index (`${number}`) for each array segment.
-Works with plain arrays, not just tuples.
+Like `DotPaths`, but also descends into arrays, emitting a generic integer index (`${bigint}`) for each array segment.
+Works with plain arrays, not just tuples. Non-integer segments such as `"users.1.5"` are rejected; negative and hex
+indices still type-check.
 
 ```ts
 type Example = {
@@ -92,7 +101,7 @@ type Example = {
 }
 
 type Paths = DotPathsWithArrayIndex<Example>
-// "users" | `users.${number}` | `users.${number}.name`
+// "users" | `users.${bigint}` | `users.${bigint}.name`
 ```
 
 ---
@@ -101,8 +110,15 @@ type Paths = DotPathsWithArrayIndex<Example>
 
 Produces a flattened object type where keys are dot-notation paths and values are the value at that path. Both
 intermediate paths (objects and arrays) and leaf paths are emitted, and arrays are descended with a generic numeric
-index (`${number}`), so a whole nested object/array can be addressed as safely as a leaf. Used by
-[`replace`](./object.md#replaceobject-key-value) to type its `key` and `value`.
+index (`${bigint}`), so a whole nested object/array can be addressed as safely as a leaf. Using `${bigint}` rather than
+`${number}` means only integer segments address elements — `"items.1.5"` is rejected, and in nested arrays
+`"matrix.0.1"` resolves to the element, not an intersection of both depths. Negative (`"items.-1"`) and hex
+(`"items.0x1"`) indices still type-check, as a template literal cannot exclude them. Used by
+[`replace`](./object.md#replaceobject-key-value) and `getValueByKey` to type their `key`.
+
+Types without statically known keys (`object`, `{}`, `unknown`, `any`) cannot be flattened and fall back to
+`Record<string, unknown>` — any string path is accepted and its value is `unknown`. The same applies below an opaque
+nested field, e.g. `"meta.x"` on `{ meta: object }`.
 
 ```ts
 type Example = {
@@ -117,8 +133,8 @@ type Flat = FlatObject<Example>
 //   "b": { c: number };
 //   "b.c": number;
 //   "items": { id: string }[];
-//   [k: `items.${number}`]: { id: string };
-//   [k: `items.${number}.id`]: string;
+//   [k: `items.${bigint}`]: { id: string };
+//   [k: `items.${bigint}.id`]: string;
 // }
 ```
 

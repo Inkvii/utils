@@ -1,3 +1,4 @@
+import type { IsOpaque } from "~/types/IsOpaque"
 import type { IsPlainObject } from "~/types/IsPlainObject"
 
 /**
@@ -10,8 +11,11 @@ import type { IsPlainObject } from "~/types/IsPlainObject"
  *   // "a" | "b.c.d"
  * ```
  */
-export type DotPaths<TObject> = {
-	[TKey in keyof TObject]-?: IsPlainObject<TObject[TKey]> extends true
-		? (TKey & string) | `${TKey & string}.${DotPaths<TObject[TKey]>}`
-		: TKey & string
-}[keyof TObject]
+export type DotPaths<TObject> =
+	IsOpaque<TObject> extends true
+		? string
+		: {
+				[TKey in keyof TObject]-?: IsPlainObject<TObject[TKey]> extends true
+					? (TKey & string) | `${TKey & string}.${DotPaths<TObject[TKey]>}`
+					: TKey & string
+			}[keyof TObject]

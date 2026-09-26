@@ -6,6 +6,7 @@ type Test = {
 	b: number
 	c: boolean
 	d: string[]
+	matrix: number[][]
 	nested: {
 		value: string
 		arr: { key: string; value: string }[]
@@ -37,6 +38,23 @@ describe("getObjectValue (types)", () => {
 		expectTypeOf(getValueByKey(object, "nested.arr.1.value")).toEqualTypeOf<string>()
 	})
 
+	it("infers each depth of a nested array without intersecting them", () => {
+		expectTypeOf(getValueByKey(object, "matrix")).toEqualTypeOf<number[][]>()
+		expectTypeOf(getValueByKey(object, "matrix.0")).toEqualTypeOf<number[]>()
+		expectTypeOf(getValueByKey(object, "matrix.0.1")).toEqualTypeOf<number>()
+	})
+
+	it("rejects numeric segments that are not array indices", () => {
+		// @ts-expect-error "1.5" is not an array index
+		getValueByKey(object, "d.1.5")
+		// @ts-expect-error "1.5" is not an array index
+		getValueByKey(object, "nested.arr.1.5")
+		// @ts-expect-error "1.5" is not an array index
+		getValueByKey(object, "nested.arr.1.5.value")
+		// @ts-expect-error exponent notation is not an array index
+		getValueByKey(object, "d.1e3")
+	})
+
 	it("assigns to an explicitly typed variable", () => {
 		const value: boolean = getValueByKey(object, "nested.deep.here")
 		expectTypeOf(value).toEqualTypeOf<boolean>()
@@ -53,5 +71,12 @@ describe("getObjectValue (types)", () => {
 		// @ts-expect-error a string leaf is not assignable to number
 		const value: number = getValueByKey(object, "a")
 		expectTypeOf(value).toEqualTypeOf<number>()
+	})
+
+	it("fallback name should resolve to string, not rever", () => {
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		function arbitraryCheck(input: object, name: string): unknown {
+			return getValueByKey(input, name)
+		}
 	})
 })
