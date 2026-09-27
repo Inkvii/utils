@@ -29,6 +29,13 @@
   record value), and paths below the `FlatObject` depth limit get their exact type instead of `unknown`
 - `FlatObject` now emits paths for numeric keys (`Record<number, T>`, `{ 1: T }`) as `${bigint}` segments — previously
   such keys had no child paths at all
+- `IsPlainObject` is now `false` for readonly arrays, constructors and built-ins (`Date`, `RegExp`, `Error`, `Map`,
+  `Set`, `WeakMap`, `WeakSet`, `Promise`). `DotPaths`, `LeafDotPaths`, `DotPathsWithArrayIndex` and `FlatObject` treat
+  them as leaves, so e.g. `"date.getTime"` or `"tags.length"` are no longer paths; `DotPathsWithArrayIndex` indexes
+  readonly arrays like mutable ones
+- `guardUtils.isEmptyObject` narrows to `Record<string, never>` and `guardUtils.isEmptyArray` narrows only the array
+  members of its input to `& { length: 0 }`. In the `false` branch both now keep the original type — previously
+  objects/arrays were narrowed away there (e.g. `if (!isEmptyArray(items))` left `items` as `never`)
 - `objectUtils.get` reads only own properties, so a path never resolves to an inherited value — e.g. `"toString"` or
   `"tags.map"` now yield `undefined` instead of the prototype function
 

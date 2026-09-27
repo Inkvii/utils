@@ -39,13 +39,21 @@ type PartialConfig = DeepPartial<Config>
 
 ## `IsPlainObject<T>`
 
-Resolves to `true` if `T` is a non-array, non-function object; otherwise `false`. Prevents recursion from descending
-into arrays, functions, or built-in objects, so only object literals are walked. Used internally by the dot-path types.
+Resolves to `true` if `T` is a plain object suitable for recursive traversal; otherwise `false`. Primitives, arrays
+(mutable and readonly, including tuples), functions, constructors and built-ins with internal state (`Date`, `RegExp`,
+`Error`, `Map`, `Set`, `WeakMap`, `WeakSet`, `Promise`) are not plain objects, so only object literals are walked. Used
+internally by the dot-path types.
+
+Class instances cannot be told apart from object literals at the type level, so they still resolve to `true`.
 
 ```ts
 IsPlainObject<{ a: 1 }> // → true
+IsPlainObject<Record<string, number>> // → true
 IsPlainObject<string[]> // → false
+IsPlainObject<readonly string[]> // → false
 IsPlainObject<() => void> // → false
+IsPlainObject<Date> // → false
+IsPlainObject<Map<string, number>> // → false
 IsPlainObject<string> // → false
 ```
 
@@ -71,8 +79,8 @@ IsOpaque<string[]> // → false
 ## `DotPaths<T>`
 
 Builds a union of all nested property paths in dot-notation, including every intermediate object path as well as its
-leaves. Only plain objects are traversed; primitives, arrays, and functions produce their key directly without
-recursion.
+leaves. Only [plain objects](#isplainobjectt) are traversed; primitives, arrays, functions and built-ins such as `Date`
+or `Map` produce their key directly without recursion (so `"date.getTime"` or `"tags.length"` are not paths).
 
 ```ts
 type Example = { a: string; b: { c: { d: number } } }
@@ -123,8 +131,8 @@ type Paths = LeafDotPaths<Example>
 ## `DotPathsWithArrayIndex<T>`
 
 Like `DotPaths`, but also descends into arrays, emitting a generic integer index (`${bigint}`) for each array segment.
-Works with plain arrays, not just tuples. Non-integer segments such as `"users.1.5"` are rejected; negative and hex
-indices still type-check.
+Works with plain and readonly arrays, not just tuples. Non-integer segments such as `"users.1.5"` are rejected; negative
+and hex indices still type-check.
 
 ```ts
 type Example = {
