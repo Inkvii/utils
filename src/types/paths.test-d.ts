@@ -138,3 +138,64 @@ describe("opaque types", () => {
 		assertType<AnyList>("list.x")
 	})
 })
+
+// Only `TDepth` (default 5) nested objects/arrays below the root are expanded.
+// Deeper paths are accepted as `${path}.${string}`, which keeps recursive types
+// from collapsing to `any`.
+describe("depth limit", () => {
+	type Folder = { name: string; children: Folder[] }
+	interface Chain {
+		value: number
+		child: Chain
+	}
+	const fiveChildren = "child.child.child.child.child"
+
+	it("does not collapse recursive types to any", () => {
+		expectTypeOf<DotPaths<Chain>>().not.toBeAny()
+		expectTypeOf<LeafDotPaths<Chain>>().not.toBeAny()
+		expectTypeOf<DotPathsWithArrayIndex<Chain>>().not.toBeAny()
+		expectTypeOf<DotPathsWithArrayIndex<Folder>>().not.toBeAny()
+	})
+
+	it("checks paths exactly up to the default depth of 5", () => {
+		assertType<DotPaths<Chain>>(`${fiveChildren}.value`)
+		assertType<LeafDotPaths<Chain>>(`${fiveChildren}.value`)
+		assertType<DotPathsWithArrayIndex<Chain>>(`${fiveChildren}.value`)
+		assertType<DotPathsWithArrayIndex<Folder>>("children.0.children.1.children.2")
+		// @ts-expect-error known levels still reject unknown keys
+		assertType<DotPaths<Chain>>(`${fiveChildren}.nope`)
+		// @ts-expect-error known levels still reject unknown keys
+		assertType<LeafDotPaths<Chain>>(`${fiveChildren}.nope`)
+		// @ts-expect-error known levels still reject unknown keys
+		assertType<DotPathsWithArrayIndex<Chain>>(`${fiveChildren}.nope`)
+		// @ts-expect-error known levels still reject unknown keys
+		assertType<DotPathsWithArrayIndex<Folder>>("children.0.children.1.nope")
+	})
+
+	it("accepts any path below the depth limit", () => {
+		assertType<DotPaths<Chain>>(`${fiveChildren}.child.anything`)
+		assertType<LeafDotPaths<Chain>>(`${fiveChildren}.child.anything`)
+		assertType<DotPathsWithArrayIndex<Chain>>(`${fiveChildren}.child.anything`)
+		assertType<DotPathsWithArrayIndex<Folder>>("children.0.children.1.children.2.anything")
+	})
+
+	it("accepts a custom depth", () => {
+		expectTypeOf<DotPaths<Chain, 1>>().toEqualTypeOf<
+			"value" | "child" | "child.value" | "child.child" | `child.child.${string}`
+		>()
+		expectTypeOf<LeafDotPaths<Chain, 1>>().toEqualTypeOf<"value" | "child.value" | `child.child.${string}`>()
+		expectTypeOf<DotPathsWithArrayIndex<Folder, 1>>().toEqualTypeOf<
+			"name" | "children" | `children.${bigint}` | `children.${bigint}.${string}`
+		>()
+		expectTypeOf<DotPaths<Test, 0>>().toEqualTypeOf<"a" | "b" | "c" | "d" | "nested" | `nested.${string}`>()
+		// @ts-expect-error root keys are always checked
+		assertType<DotPaths<Test, 0>>("nope")
+	})
+
+	it("accepts a depth above 10", () => {
+		const twelveChildren = `${fiveChildren}.${fiveChildren}.child.child`
+		assertType<DotPaths<Chain, 12>>(`${twelveChildren}.value`)
+		// @ts-expect-error known levels still reject unknown keys
+		assertType<DotPaths<Chain, 12>>(`${twelveChildren}.nope`)
+	})
+})

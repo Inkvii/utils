@@ -1,7 +1,7 @@
 # array
 
-Small helpers for creating and normalizing arrays: wrap a single value into an array, or build numeric index/range
-arrays.
+Small helpers for creating, normalizing and comparing arrays: wrap a single value into an array, build numeric
+index/range arrays, or pair two arrays by index for `objectUtils.diff`.
 
 All exports are available under the `arrayUtils` namespace from the package root:
 
@@ -82,4 +82,36 @@ arrayUtils.createFromRange(min: number, max: number): number[]
 arrayUtils.createFromRange(-2, 1) // → [-2, -1, 0, 1]
 arrayUtils.createFromRange(7, 12) // → [7, 8, 9, 10, 11, 12]
 arrayUtils.createFromRange(5, 5) // → [5]
+```
+
+---
+
+## `arrayUtils.diffByIndex(inputArray, initialArray)`
+
+Pairs the items of two arrays by index. It's the default `onArrayDiff` of
+[`objectUtils.diff`](./object.md#objectutilsdiffinput-initial-options). The longer array decides the number of pairs;
+the missing side is `undefined`.
+
+```ts
+arrayUtils.diffByIndex(inputArray: readonly unknown[], initialArray: readonly unknown[]): ArrayDiffPair[]
+```
+
+| Parameter      | Type                 | Description               |
+| -------------- | -------------------- | ------------------------- |
+| `inputArray`   | `readonly unknown[]` | Items of the input.       |
+| `initialArray` | `readonly unknown[]` | Items of the initial one. |
+
+- Returns `{ index, inputValue, initialValue }` pairs (`arrayUtils.ArrayDiffPair`). Item references are kept.
+- Inserting or removing an item in the middle shifts all later items, so they no longer pair up. To pair by identity
+  instead (e.g. `id`), write your own `arrayUtils.ArrayDiffHandler` —
+  `(inputArray, initialArray, { path }) => ArrayDiffPair[]` — and pass it as `onArrayDiff`.
+
+```ts
+arrayUtils.diffByIndex(["a", "b"], ["x", "y"])
+// → [{ index: 0, inputValue: "a", initialValue: "x" }, { index: 1, inputValue: "b", initialValue: "y" }]
+
+arrayUtils.diffByIndex(["a", "b"], ["a"])
+// → [{ index: 0, inputValue: "a", initialValue: "a" }, { index: 1, inputValue: "b", initialValue: undefined }]
+
+arrayUtils.diffByIndex([], []) // → []
 ```

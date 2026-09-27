@@ -93,6 +93,72 @@ describe("FlatObject", () => {
 		})
 	})
 
+	// Only `TDepth` (default 5) nested objects/arrays below the root are
+	// expanded. Deeper paths are accepted but typed loosely as `unknown`, which
+	// keeps recursive types from expanding forever.
+	describe("depth limit", () => {
+		type Folder = { name: string; children: Folder[] }
+		interface Tree {
+			value: number
+			left?: Tree
+			right?: Tree
+		}
+		type Deep = { a: { b: { c: { d: { e: { f: { g: string } } } } } } }
+
+		it("types recursive types exactly up to the default depth", () => {
+			type FlatFolder = FlatObject<Folder>
+			expectTypeOf<FlatFolder["name"]>().toEqualTypeOf<string>()
+			expectTypeOf<FlatFolder["children"]>().toEqualTypeOf<Folder[]>()
+			expectTypeOf<FlatFolder["children.0"]>().toEqualTypeOf<Folder>()
+			expectTypeOf<FlatFolder["children.0.name"]>().toEqualTypeOf<string>()
+			expectTypeOf<FlatFolder["children.0.children.0.name"]>().toEqualTypeOf<string>()
+			expectTypeOf<FlatFolder["children.0.children.0.children"]>().toEqualTypeOf<Folder[]>()
+			expectTypeOf<FlatFolder["children.0.children.0.children.0"]>().toEqualTypeOf<Folder>()
+			// @ts-expect-error known levels still reject unknown keys
+			assertType<keyof FlatFolder>("children.0.children.0.nope")
+
+			type FlatTree = FlatObject<Tree>
+			expectTypeOf<FlatTree["left.right.left.right.left"]>().toEqualTypeOf<Tree>()
+			expectTypeOf<FlatTree["left.right.left.right.left.value"]>().toEqualTypeOf<number>()
+		})
+
+		it("types paths below the depth limit as unknown", () => {
+			expectTypeOf<FlatObject<Folder>["children.0.children.0.children.0.name"]>().toEqualTypeOf<unknown>()
+			expectTypeOf<FlatObject<Folder>["children.0.children.0.children.0.children.5.name"]>().toEqualTypeOf<unknown>()
+			expectTypeOf<FlatObject<Tree>["left.right.left.right.left.right"]>().toEqualTypeOf<Tree>()
+			expectTypeOf<FlatObject<Tree>["left.right.left.right.left.right.value"]>().toEqualTypeOf<unknown>()
+
+			expectTypeOf<FlatObject<Deep>["a.b.c.d.e"]>().toEqualTypeOf<{ f: { g: string } }>()
+			expectTypeOf<FlatObject<Deep>["a.b.c.d.e.f"]>().toEqualTypeOf<{ g: string }>()
+			expectTypeOf<FlatObject<Deep>["a.b.c.d.e.f.g"]>().toEqualTypeOf<unknown>()
+			expectTypeOf<FlatObject<Deep>["a.b.c.d.e.f.anything"]>().toEqualTypeOf<unknown>()
+			// @ts-expect-error keys of the last expanded level are still checked
+			assertType<keyof FlatObject<Deep>>("a.b.c.d.e.nope")
+		})
+
+		it("counts nested arrays as levels", () => {
+			type Arrays = { list: string[][][][][][] }
+			expectTypeOf<FlatObject<Arrays>["list.0.1.2.3.4"]>().toEqualTypeOf<string[]>()
+			expectTypeOf<FlatObject<Arrays>["list.0.1.2.3.4.5"]>().toEqualTypeOf<unknown>()
+		})
+
+		it("accepts a custom depth", () => {
+			expectTypeOf<FlatObject<Deep, 6>["a.b.c.d.e.f.g"]>().toEqualTypeOf<string>()
+			expectTypeOf<FlatObject<Deep, 1>["a.b"]>().toEqualTypeOf<{ c: { d: { e: { f: { g: string } } } } }>()
+			expectTypeOf<FlatObject<Deep, 1>["a.b.c"]>().toEqualTypeOf<unknown>()
+			expectTypeOf<FlatObject<Deep, 0>["a"]>().toEqualTypeOf<{ b: { c: { d: { e: { f: { g: string } } } } } }>()
+			expectTypeOf<FlatObject<Deep, 0>["a.b"]>().toEqualTypeOf<unknown>()
+			expectTypeOf<FlatObject<Folder, 3>["children.0.children.0"]>().toEqualTypeOf<Folder>()
+			expectTypeOf<FlatObject<Folder, 3>["children.0.children.0.name"]>().toEqualTypeOf<unknown>()
+			expectTypeOf<FlatObject<Folder, 1>["children.0"]>().toEqualTypeOf<Folder>()
+			expectTypeOf<FlatObject<Folder, 1>["children.0.name"]>().toEqualTypeOf<unknown>()
+			// @ts-expect-error root keys are always checked
+			assertType<keyof FlatObject<Deep, 0>>("nope")
+			// @ts-expect-error depth is limited to 10
+			assertType<FlatObject<Deep, 11>>({})
+		})
+	})
+
 	// Types without statically known keys cannot be flattened, so any string is
 	// a valid path and the value is `unknown` — never an empty (`never`) key set.
 	describe("opaque types fall back to string paths", () => {

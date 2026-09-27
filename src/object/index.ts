@@ -1,2 +1,5 @@
+export * from "./diff"
 export * from "./get"
+export * from "./hasDiff"
+export * from "./isEqualLeaf"
 export * from "./replace"

@@ -1,6 +1,15 @@
 ## Features
 
 - Added `IsOpaque` type, resolving to `true` for types without statically known keys (`any`, `unknown`, `object`, `{}`)
+- Added `objectUtils.diff(input, initial, options?)`, which recursively compares two objects and returns only the
+  differing values (`{ path, inputValue, initialValue }`) as a nested or flat (`output: "flat"`) result. It supports
+  custom array pairing (`onArrayDiff`), a leaf comparator (`isEqual`) and ignored paths (`ignore`); dates are compared
+  by value, and non-serializable values and circular references are skipped
+- Added `objectUtils.hasDiff(...)` (boolean "is dirty" check that stops at the first difference),
+  `objectUtils.isEqualLeaf(...)` (default leaf comparator) and `objectUtils.isDiffEntry(...)` (type guard for nested
+  results)
+- Added `arrayUtils.diffByIndex(inputArray, initialArray)`, which pairs array items by index. It's the default
+  `onArrayDiff` of `objectUtils.diff`
 
 ## Refactor
 
