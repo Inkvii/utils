@@ -26,13 +26,12 @@ describe("random", () => {
 			expect(actual).toBeLessThanOrEqual(max)
 
 			if ([...distribution.values()].every((value) => value > 0)) {
-				console.debug(`Test took ${i + 1} iterations`)
 				// no need to continue further, all numbers are verified
 				break
 			}
 		}
 
-		printDistribution(distribution)
+		// printDistribution(distribution)
 
 		expect(distribution.get(min)).toBeGreaterThan(0)
 		expect(distribution.get(max)).toBeGreaterThan(0)
@@ -110,13 +109,12 @@ describe("random", () => {
 			distribution.set(actual, (distribution.get(actual) ?? 0) + 1)
 
 			if ([...distribution.values()].every((value) => value > 0)) {
-				console.debug(`Test took ${i + 1} iterations`)
 				// no need to continue further, all numbers are verified
 				break
 			}
 		}
 
-		printDistribution(distribution)
+		// printDistribution(distribution)
 		expect([...distribution.values()].every((value) => value > 0)).toBe(true)
 	})
 })
@@ -177,10 +175,10 @@ function initializeDistribution(min: number, max: number) {
 	return distribution
 }
 
-function printDistribution(distribution: Map<number, number>) {
-	let message = ""
-	for (const [key, count] of [...distribution.entries()].sort((a, b) => a[0] - b[0])) {
-		message += `\nKey: ${key} appeared ${count} times`
-	}
-	console.debug(message)
-}
+// function printDistribution(distribution: Map<number, number>) {
+// 	let message = ""
+// 	for (const [key, count] of [...distribution.entries()].sort((a, b) => a[0] - b[0])) {
+// 		message += `\nKey: ${key} appeared ${count} times`
+// 	}
+// 	console.debug(message)
+// }
