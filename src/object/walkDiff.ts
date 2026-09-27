@@ -1,4 +1,5 @@
 import { diffByIndex } from "~/array/diffByIndex"
+import { isPlainObject } from "~/guard/utils"
 import { isEqualLeaf } from "~/object/isEqualLeaf"
 import type { DiffEntry, DiffOptions } from "~/object/diff"
 
@@ -44,9 +45,9 @@ export function walkDiff(
  */
 function normalizeRoots(input: unknown, initial: unknown): [unknown, unknown] {
 	if (Array.isArray(input)) return [input, Array.isArray(initial) ? initial : []]
-	if (isPlainRecord(input)) return [input, isPlainRecord(initial) ? initial : {}]
+	if (isPlainObject(input)) return [input, isPlainObject(initial) ? initial : {}]
 	if (Array.isArray(initial)) return [[], initial]
-	if (isPlainRecord(initial)) return [{}, initial]
+	if (isPlainObject(initial)) return [{}, initial]
 	return [{}, {}]
 }
 
@@ -56,7 +57,7 @@ function walk(input: unknown, initial: unknown, segments: PathSegment[], state: 
 	if (!isSerializable(input) || !isSerializable(initial)) return false
 	if (isAncestor(input, state.inputAncestors) || isAncestor(initial, state.initialAncestors)) return false
 
-	if (isPlainRecord(input) && isPlainRecord(initial)) {
+	if (isPlainObject(input) && isPlainObject(initial)) {
 		if (input === initial) return false
 		return withAncestors(input, initial, state, () => walkObject(input, initial, segments, state))
 	}
@@ -125,18 +126,8 @@ export function toPath(segments: readonly PathSegment[]): string {
 	return segments.join(".")
 }
 
-/**
- * Stricter than `isPlainObject` from guards: only object literals and `Object.create(null)` pass, so `Date`, `Map`
- * or class instances are not walked.
- */
-function isPlainRecord(value: unknown): value is Record<string, unknown> {
-	if (typeof value !== "object" || value === null) return false
-	const prototype: unknown = Object.getPrototypeOf(value)
-	return prototype === Object.prototype || prototype === null
-}
-
 function isContainer(value: unknown): boolean {
-	return Array.isArray(value) || isPlainRecord(value)
+	return Array.isArray(value) || isPlainObject(value)
 }
 
 /**

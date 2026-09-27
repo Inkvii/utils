@@ -89,6 +89,18 @@ type Paths = DotPaths<{ a: string; meta: object }>
 // "a" | "meta" | `meta.${string}`
 ```
 
+An optional second parameter `TDepth` (default `5`) limits how many nested objects below the root are expanded. Paths
+below that are still accepted, but typed loosely as `` `${path}.${string}` ``. This keeps recursive types (e.g. trees)
+from expanding forever, and applies to `LeafDotPaths`, `DotPathsWithArrayIndex` (which also counts arrays as a level)
+and [`FlatObject`](#flatobjectt) too.
+
+```ts
+type Example = { a: { b: { c: string } } }
+
+type Paths = DotPaths<Example, 1>
+// "a" | "a.b" | `a.b.${string}`
+```
+
 ---
 
 ## `LeafDotPaths<T>`
@@ -160,6 +172,21 @@ type Flat = FlatObject<Example>
 //   "items": { id: string }[];
 //   [k: `items.${bigint}`]: { id: string };
 //   [k: `items.${bigint}.id`]: string;
+// }
+```
+
+Only `TDepth` (default `5`) nested objects/arrays below the root are expanded; deeper paths are accepted as
+`` `${path}.${string}` `` with value `unknown`. [`PathValue`](#pathvaluet-tpath) still resolves their exact type.
+
+```ts
+type Folder = { name: string; children: Folder[] }
+
+type FlatFolder = FlatObject<Folder, 1>
+// {
+//   "name": string;
+//   "children": Folder[];
+//   [k: `children.${bigint}`]: Folder;
+//   [k: `children.${bigint}.${string}`]: unknown;
 // }
 ```
 

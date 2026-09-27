@@ -1,5 +1,10 @@
+/**
+ * Only object literals and `Object.create(null)` pass, so arrays, `Date`, `Map`, `Set` or class instances do not.
+ */
 export function isPlainObject(v: unknown): v is Record<string, unknown> {
-	return typeof v === "object" && v !== null && !Array.isArray(v)
+	if (typeof v !== "object" || v === null) return false
+	const prototype: unknown = Object.getPrototypeOf(v)
+	return prototype === Object.prototype || prototype === null
 }
 
 export function isEmptyObject(v: unknown): v is object {

@@ -31,10 +31,14 @@ passed validation, but no field is guaranteed to be present.
   skipped, so a later `""` or `null` won't clobber an earlier real value.
 - **Arrays** — concatenated, then primitive values are de-duplicated. (Objects/arrays nested inside an array are kept
   as-is.)
-- **Objects** — merged recursively, to any depth.
+- **Objects** — merged recursively, to any depth. Only plain objects (object literals, see
+  [`guardUtils.isPlainObject`](./guard.md#value-guards)) are merged key by key; `Date`, `Map`, `Set` and class instances
+  are treated as values, so the last valid one wins.
 - **Mixed primitive vs. array** for the same key — the array wins by default. With `enableSingleValueArrays`, the single
   value is wrapped into the array instead so nothing is lost.
-- Inputs are **never mutated**; a new object is returned.
+- Inputs are **never mutated**; a new object is returned. Objects and arrays in the result are copies, even when a later
+  invalid value (e.g. `null`) leaves an earlier object as the winner — only objects nested inside arrays keep their
+  original references.
 - The `__proto__` key is ignored to avoid prototype pollution.
 
 ### Examples
@@ -63,6 +67,15 @@ mergeUtils.merge([{ text: "first" }, { text: ["second", "third"] }], { enableSin
 // Nested objects and arrays of objects merge recursively
 mergeUtils.merge([{ node: [{ text: "A", children: [{ text: "A.1" }] }] }, { node: [{ int: 20 }] }])
 // → { node: [{ text: "A", children: [{ text: "A.1" }] }, { int: 20 }] }
+
+// Dates (and Map, Set, class instances) are values, not merged key by key
+mergeUtils.merge([{ date: new Date(1) }, { date: new Date(0) }])
+// → { date: new Date(0) }
+
+// A later null doesn't clobber the object, and the result gets a copy of it
+const first = { obj: { int: 1 } }
+const merged = mergeUtils.merge([first, { obj: null }])
+// → { obj: { int: 1 } }, and merged.obj !== first.obj
 ```
 
 ### `MergeOptions`
@@ -74,7 +87,8 @@ mergeUtils.merge([{ node: [{ text: "A", children: [{ text: "A.1" }] }] }, { node
 | `nullIsValid`                    | `false` | Treat `null` as a valid value (don't filter it out).                                                                          |
 | `undefinedIsValid`               | `false` | Treat `undefined` as a valid value.                                                                                           |
 | `emptyStringIsValid`             | `false` | Treat `""` as a valid value.                                                                                                  |
-| `validators`                     | `[]`    | Extra predicates `(value) => boolean`; returning `true` marks a value **invalid** and filters it out.                         |
+
+Unlike `mergeArrays`, `merge` does **not** accept custom `validators`.
 
 ---
 
@@ -145,19 +159,13 @@ The merge/filter functions skip values considered "empty" or "meaningless". By d
 - `NaN`
 - `Infinity` and `-Infinity`
 - empty array `[]`
-- empty object `{}`
+- empty plain object `{}` (a `Date` or an empty `Map`/`Set` is valid)
 
 Note that **`0` and `false` are valid** — they are kept. You can relax the defaults per call with `nullIsValid` /
-`undefinedIsValid` / `emptyStringIsValid`, or add your own rules via `validators`. Custom validators run **before** the
-built-in checks, and a validator returning `true` marks the value for removal:
+`undefinedIsValid` / `emptyStringIsValid`, or add your own rules to `mergeArrays` via `validators`. Custom validators
+run **before** the built-in checks, and a validator returning `true` marks the value for removal:
 
 ```ts
-// Drop any string that starts with a hash
-mergeUtils.merge([{ tag: "release" }, { tag: "#draft" }], {
-	validators: [(v) => typeof v === "string" && v.startsWith("#")],
-})
-// → { tag: "release" }
-
 // Filter out specific enum-like values
 mergeUtils.mergeArrays([["A", "keep", "B"]], {
 	validators: [(value) => ["A", "B", "C"].includes(value)],

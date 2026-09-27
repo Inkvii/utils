@@ -36,8 +36,9 @@
 	"types": "build/artifacts/src/index.d.ts",
 	"exports": {
 		".": {
+			"types": "./build/artifacts/src/index.d.ts",
 			"import": "./build/artifacts/src/index.js",
-			"types": "./build/artifacts/src/index.d.ts"
+			"default": "./build/artifacts/src/index.js"
 		}
 	},
 	"files": [

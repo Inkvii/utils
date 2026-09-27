@@ -18,6 +18,8 @@ describe("isInvalidPrimitive", () => {
 		[""],
 		Number.MAX_VALUE,
 		Number.MIN_VALUE,
+		new Date(0),
+		new Map(),
 	])("Value [$0] is NOT invalid", (value) => {
 		expect(isInvalidPrimitive(value)).toBeFalsy()
 	})

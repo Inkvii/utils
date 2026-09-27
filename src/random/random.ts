@@ -5,9 +5,11 @@ export interface RandomOptions {
 
 /**
  * Returns random integer number between `min` and `max` based on the `options`
- * @param min min value (inclusive by default). Must be less than `max`
- * @param max max value (inclusive by default). Must be greater than `min`
+ * @param min min value (inclusive by default). Must be less than or equal to `max`
+ * @param max max value (inclusive by default). Must be greater than or equal to `min`
  * @param options further options for modifying generator behavior
+ * @remarks Only integers inside the interval are returned, so `random(1.5, 3)` returns `2` or `3`.
+ * Throws if the interval contains no integer, e.g. `random(1.2, 1.8)` or `random(1, 2, { excludeMin: true, excludeMax: true })`
  *
  * @example ```tsx
  * random(1, 10)
@@ -15,27 +17,19 @@ export interface RandomOptions {
  * ```
  */
 export function random(min: number, max: number, options?: RandomOptions) {
-	if (min === max) {
-		return Math.floor(min)
+	if (min > max) {
+		throw new Error(`Min must be less than or equal to max. Got min: ${min}, max: ${max}`)
 	}
 
-	if (min > max || max < min) {
-		throw new Error(`Min must be greater than max. Got min: ${min}, max: ${max}`)
+	const lowest = options?.excludeMin ? Math.floor(min) + 1 : Math.ceil(min)
+	const highest = options?.excludeMax ? Math.ceil(max) - 1 : Math.floor(max)
+
+	if (lowest > highest) {
+		const interval = `${options?.excludeMin ? "(" : "<"}${min}; ${max}${options?.excludeMax ? ")" : ">"}`
+		throw new Error(`Cannot generate random integer from interval ${interval}`)
 	}
 
-	if (Math.abs(Math.floor(min) - Math.floor(max)) === 1 && options?.excludeMin && options?.excludeMax) {
-		throw new Error(`Cannot generate random non-inclusive value from interval (${min}; ${max})`)
-	}
-
-	if (options?.excludeMin) {
-		return Math.floor(Math.random() * (max - min)) + min + 1
-	}
-
-	if (options?.excludeMax) {
-		return Math.floor(Math.random() * (max - min)) + min
-	}
-
-	return Math.floor(Math.random() * (max - min + 1)) + min
+	return Math.floor(Math.random() * (highest - lowest + 1)) + lowest
 }
 
 export interface RandomMarginalChangeOptions {
@@ -77,23 +71,26 @@ export interface RandomMarginalChangeOptions {
  * ```typescript
  *  randomMarginalChange(100, {minFixed: -10, maxFixed: 10, minPercentage: 0.9, maxPercentage: 1.1})
  *  // results in interval  min: (100 - 10) * 0.9; max: (100 + 10) * 1.1
- *  // where result will be <89; 121>
+ *  // where result will be <81; 121>
  *
  * ```
- * @remark Returns floored random value
+ * @remarks Returns random integer from the interval. If the interval contains no integer (e.g. `<100.2; 100.8>`),
+ * returns its rounded middle. Bounds are swapped if the computed min is greater than max (e.g. for negative `value`)
  *
  * @param value initial value to be derived
  * @param options fixed values default to 0, percentage values defaults to 1
  */
 export function randomMarginalChange(value: number, options: RandomMarginalChangeOptions) {
-	const min = (value + (options.minFixed ?? 0)) * (options.minPercentage ?? 1)
-	const max = (value + (options.maxFixed ?? 0)) * (options.maxPercentage ?? 1)
+	const first = (value + (options.minFixed ?? 0)) * (options.minPercentage ?? 1)
+	const second = (value + (options.maxFixed ?? 0)) * (options.maxPercentage ?? 1)
+	const min = Math.min(first, second)
+	const max = Math.max(first, second)
 
-	const computedResult = Math.round(random(min, max))
-	if (options.absoluteMin && computedResult < options.absoluteMin) {
+	const computedResult = Math.ceil(min) <= Math.floor(max) ? random(min, max) : Math.round((min + max) / 2)
+	if (options.absoluteMin !== undefined && computedResult < options.absoluteMin) {
 		return options.absoluteMin
 	}
-	if (options.absoluteMax && computedResult > options.absoluteMax) {
+	if (options.absoluteMax !== undefined && computedResult > options.absoluteMax) {
 		return options.absoluteMax
 	}
 

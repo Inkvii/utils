@@ -51,18 +51,25 @@ Type-guards and number checks used internally, exposed for convenience:
 
 | Function                        | Signature                                      | Returns `true` when…                                      |
 | ------------------------------- | ---------------------------------------------- | --------------------------------------------------------- |
-| `guardUtils.isPlainObject(v)`   | `(v: unknown) => v is Record<string, unknown>` | `v` is a non-null object that isn't an array              |
+| `guardUtils.isPlainObject(v)`   | `(v: unknown) => v is Record<string, unknown>` | `v` is an object literal or `Object.create(null)`         |
 | `guardUtils.isEmptyObject(v)`   | `(v: unknown) => v is object`                  | `v` is a plain object with no own keys (`{}`)             |
 | `guardUtils.isEmptyArray(v)`    | `(v: unknown) => v is Array<unknown>`          | `v` is an array of length `0` (`[]`)                      |
 | `guardUtils.isInvalidNumber(v)` | `(v: unknown) => boolean`                      | `v` is a number that is `NaN` or not finite (`±Infinity`) |
 
+`isPlainObject` checks the prototype, so arrays, `Date`, `Map`, `Set`, `RegExp`, functions and class instances are not
+plain objects. `isEmptyObject` uses it, so an empty `Map` or a `Date` is not an "empty object".
+
 ```ts
 guardUtils.isPlainObject({ a: 1 }) // → true
+guardUtils.isPlainObject(Object.create(null)) // → true
 guardUtils.isPlainObject([]) // → false
 guardUtils.isPlainObject(null) // → false
+guardUtils.isPlainObject(new Date()) // → false
+guardUtils.isPlainObject(new Map()) // → false
 
 guardUtils.isEmptyObject({}) // → true
 guardUtils.isEmptyObject({ a: 1 }) // → false
+guardUtils.isEmptyObject(new Map()) // → false
 
 guardUtils.isEmptyArray([]) // → true
 guardUtils.isEmptyArray([1]) // → false

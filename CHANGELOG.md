@@ -11,6 +11,37 @@
   results)
 - Added `arrayUtils.diffByIndex(inputArray, initialArray)`, which pairs array items by index. It's the default
   `onArrayDiff` of `objectUtils.diff`
+- `DotPaths`, `LeafDotPaths`, `DotPathsWithArrayIndex` and `FlatObject` accept an optional `TDepth` parameter (default
+  `5`) limiting how many nested levels are expanded; deeper paths are typed loosely as `${path}.${string}`, so recursive
+  types no longer expand forever
+
+## Refactor
+
+- **Breaking:** `guardUtils.isPlainObject` now accepts only object literals and `Object.create(null)` — `Date`, `Map`,
+  `Set` and class instances are no longer plain objects. `guardUtils.isEmptyObject` follows, so an empty `Map` is no
+  longer an "empty object" and is kept by `mergeUtils.merge`
+- **Breaking:** `randomUtils.random` returns only integers inside the interval (`random(1.5, 3)` → `2` or `3`) and
+  throws when the interval contains no integer, including `min === max` with an excluded bound. Error messages changed
+  to `Min must be less than or equal to max...` and `Cannot generate random integer from interval ...`
+
+- `objectUtils.get` return type and `objectUtils.replace` `value` type are now `PathValue<TObject, TKey>` instead of
+  `FlatObject<TObject>[TKey]`. Paths below a `Record<string, T>` resolve exactly (`"byId.1.value"` → `string`, not the
+  record value), and paths below the `FlatObject` depth limit get their exact type instead of `unknown`
+- `FlatObject` now emits paths for numeric keys (`Record<number, T>`, `{ 1: T }`) as `${bigint}` segments — previously
+  such keys had no child paths at all
+- `objectUtils.get` reads only own properties, so a path never resolves to an inherited value — e.g. `"toString"` or
+  `"tags.map"` now yield `undefined` instead of the prototype function
+
+## Bugfix
+
+- `mergeUtils.merge` no longer turns `Date`, `Map`, `Set` and class instances into `{}`; they are merged as values
+- `mergeUtils.merge` no longer returns an input's object/array by reference when a later value for the key is invalid
+  (e.g. `null`) or a primitive — the result gets a copy
+- `randomUtils.random` with both `excludeMin` and `excludeMax` no longer returns `max`
+- `randomUtils.randomMarginalChange` respects `absoluteMin` / `absoluteMax` of `0`, swaps bounds instead of throwing for
+  negative values, and returns the rounded middle when the interval contains no integer
+
+# v0.6.1
 
 ## Refactor
 
@@ -34,13 +65,6 @@
 - `DotPaths`, `LeafDotPaths` and `DotPathsWithArrayIndex` apply the same fallback: types without known keys produce
   `string` instead of `never`, and an opaque nested field yields `` `field.${string}` `` — previously `LeafDotPaths`
   dropped such a field entirely
-- `objectUtils.get` return type and `objectUtils.replace` `value` type are now `PathValue<TObject, TKey>` instead of
-  `FlatObject<TObject>[TKey]`. Paths below a `Record<string, T>` resolve exactly (`"byId.1.value"` → `string`, not the
-  record value), and paths below the `FlatObject` depth limit get their exact type instead of `unknown`
-- `FlatObject` now emits paths for numeric keys (`Record<number, T>`, `{ 1: T }`) as `${bigint}` segments — previously
-  such keys had no child paths at all
-- `objectUtils.get` reads only own properties, so a path never resolves to an inherited value — e.g. `"toString"` or
-  `"tags.map"` now yield `undefined` instead of the prototype function
 
 # v0.5.0
 

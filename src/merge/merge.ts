@@ -71,5 +71,7 @@ function mergeValues<TData>(values: unknown[], options?: MergeOptions<TData>): u
 		return mergeArrays(values, options)
 	}
 
-	return values.findLast((v) => !isInvalidPrimitive(v, options))
+	const last = values.findLast((v) => !isInvalidPrimitive(v, options))
+	// merged on its own, so a winning object/array is copied instead of being shared with the input
+	return isPlainObject(last) || Array.isArray(last) ? mergeValues([last], options) : last
 }

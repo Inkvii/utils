@@ -399,6 +399,39 @@ describe("merge", () => {
 			})
 		).toStrictEqual({ text: ["first", 1, true, false] })
 	})
+	it("Keeps Date, Map and class instances as values", () => {
+		class Point {
+			constructor(public x: number) {}
+		}
+		const date = new Date(0)
+		const map = new Map([["a", 1]])
+		const point = new Point(1)
+
+		const actual = merge<{ date: Date; map: Map<string, number>; point: Point; dates: Date[] }>([
+			{ date: new Date(1), dates: [date] },
+			{ date, map, point, dates: [date, new Date(2)] },
+		])
+
+		expect(actual.date).toBe(date)
+		expect(actual.map).toBe(map)
+		expect(actual.point).toBe(point)
+		expect(actual.dates).toStrictEqual([date, new Date(2)])
+	})
+	it("Does not share objects/arrays with inputs when later value is invalid", () => {
+		const first = { obj: { int: 1 }, arr: [1, 2] }
+		const actual = merge<{ obj: { int: number } | null; arr: number[] | null }>([first, { obj: null, arr: null }])
+
+		expect(actual).toStrictEqual({ obj: { int: 1 }, arr: [1, 2] })
+		expect(actual.obj).not.toBe(first.obj)
+		expect(actual.arr).not.toBe(first.arr)
+	})
+	it("Does not share object with inputs when it overrides a primitive", () => {
+		const second = { text: { anything: true } }
+		const actual = merge<{ text: string | { anything: boolean } }>([{ text: "first" }, second])
+
+		expect(actual).toStrictEqual({ text: { anything: true } })
+		expect(actual.text).not.toBe(second.text)
+	})
 })
 
 // describe("merge", () => {
