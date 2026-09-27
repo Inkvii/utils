@@ -1,14 +1,16 @@
 import type { FlatObject } from "~/types/FlatObject"
+import type { PathValue } from "~/types/PathValue"
 
 /**
  * Replaces a single deeply nested value, addressed by a dot‑notation path, and
- * returns a new object — the input is left untouched. The `value` type is
- * derived from {@link FlatObject}, so it must match the type at `key`.
+ * returns a new object — the input is left untouched. `key` is constrained to
+ * the paths of {@link FlatObject}, and the `value` type is {@link PathValue},
+ * so it must match the type at `key`.
  */
 export function replace<TObject, TKey extends keyof FlatObject<TObject> & string>(
 	object: TObject,
 	key: TKey,
-	value: FlatObject<TObject>[TKey]
+	value: PathValue<TObject, TKey>
 ): TObject {
 	return setDeep(object, key.split("."), value) as TObject
 }

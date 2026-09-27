@@ -14,6 +14,7 @@ import type {
 	IsPlainObject,
 	LeafDotPaths,
 	LooseString,
+	PathValue,
 } from "@1nkvi/utils"
 ```
 
@@ -139,6 +140,11 @@ Types without statically known keys (`object`, `{}`, `unknown`, `any`) cannot be
 `Record<string, unknown>` — any string path is accepted and its value is `unknown`. The same applies below an opaque
 nested field, e.g. `"meta.x"` on `{ meta: object }`.
 
+Numeric keys (`Record<number, T>`, `{ 1: T }`) are emitted as `${bigint}` segments, same as array indices. Keys of a
+`Record<string, T>` are emitted as `` `byId.${string}` ``, which also matches every deeper path — so indexing
+`FlatObject<T>["byId.1.value"]` resolves to the record value `T`, not the type of `value`. Use
+[`PathValue`](#pathvaluet-tpath) for the exact type at a path.
+
 ```ts
 type Example = {
 	a: string
@@ -155,6 +161,33 @@ type Flat = FlatObject<Example>
 //   [k: `items.${bigint}`]: { id: string };
 //   [k: `items.${bigint}.id`]: string;
 // }
+```
+
+---
+
+## `PathValue<T, TPath>`
+
+Resolves the type of the value at the dot-notation path `TPath` by splitting it on `.` and walking `T` one segment at a
+time. Used by [`objectUtils.get`](./object.md#objectutilsgetobject-key) for its return type and by
+[`objectUtils.replace`](./object.md#objectutilsreplaceobject-key-value) for its `value`. Unlike indexing
+[`FlatObject`](#flatobjectt), it stays exact below a `Record<string, T>` and has no depth limit.
+
+- Optional keys resolve to their type without `undefined`, same as `FlatObject`.
+- Array elements are addressed by integer segments (`${bigint}`); numeric segments also address numeric keys
+  (`Record<number, T>`, `{ 1: T }`).
+- Unknown segments, segments below a primitive, opaque types (`object`, `unknown`, `any`) and a non-literal `string`
+  path resolve to `unknown`.
+
+```ts
+type Example = {
+	byId: Record<string, { id: number; tags: string[] }>
+	settings?: { theme: string }
+}
+
+type A = PathValue<Example, "byId.1"> // → { id: number; tags: string[] }
+type B = PathValue<Example, "byId.1.tags.0"> // → string
+type C = PathValue<Example, "settings.theme"> // → string
+type D = PathValue<Example, "nope"> // → unknown
 ```
 
 ---

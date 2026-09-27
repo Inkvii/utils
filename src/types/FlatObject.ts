@@ -23,6 +23,12 @@ type UnionToIntersection<TUnion> = (TUnion extends unknown ? (arg: TUnion) => vo
  * that are still accepted, but typed loosely as `${path}.${string}` →
  * `unknown`. This keeps recursive types (e.g. trees) from expanding forever.
  *
+ * Keys of a `Record<string, T>` are emitted as `${path}.${string}`, which also
+ * matches every deeper path — indexing `"byId.1.value"` resolves to the record
+ * value `T`, not the type of `value`. Use {@link PathValue} for the exact type
+ * at a path. Numeric keys (`Record<number, T>`) are emitted as `${bigint}`
+ * segments, same as array indices, and stay exact.
+ *
  * @typeParam T - The object type to flatten.
  * @typeParam TDepth - How many nested objects/arrays below the root are expanded. Defaults to `5`.
  *
@@ -71,13 +77,26 @@ type FlatObjectAt<T, TRemaining extends unknown[]> =
 
 type FlatObjectFromKeys<T, TRemaining extends unknown[]> = UnionToIntersection<
 	{
-		[Key in keyof T & string]: IsPlainObject<T[Key]> extends true
-			? { [FlatKey in Key]: T[Key] } & ChildPaths<Key, T[Key], TRemaining>
+		[Key in PathKeys<T>]: IsPlainObject<T[Key]> extends true
+			? { [FlatKey in KeySegment<Key>]: T[Key] } & ChildPaths<KeySegment<Key>, T[Key], TRemaining>
 			: T[Key] extends readonly unknown[]
-				? { [FlatKey in Key]: T[Key] } & ChildPaths<Key, T[Key], TRemaining>
-				: { [FlatKey in Key]: T[Key] }
-	}[keyof T & string]
+				? { [FlatKey in KeySegment<Key>]: T[Key] } & ChildPaths<KeySegment<Key>, T[Key], TRemaining>
+				: { [FlatKey in KeySegment<Key>]: T[Key] }
+	}[PathKeys<T>]
 >
+
+/**
+ * Keys of `T` that can appear in a path. Numeric keys (`Record<number, T>`,
+ * `{ 1: T }`) are included, unless a string index signature already covers them.
+ */
+type PathKeys<T> = string extends keyof T ? keyof T & string : keyof T & (string | number)
+
+/** Path segment of a key — the `number` index signature becomes `${bigint}`, same as array indices */
+type KeySegment<TKey extends string | number> = TKey extends string
+	? TKey
+	: number extends TKey
+		? `${bigint}`
+		: `${TKey}`
 
 /**
  * Paths inside the nested object/array `TValue` found at `TPrefix`. Descending

@@ -1,6 +1,7 @@
 ## Features
 
 - Added `IsOpaque` type, resolving to `true` for types without statically known keys (`any`, `unknown`, `object`, `{}`)
+- Added `PathValue<T, TPath>` type, resolving the exact type at a dot-notation path by walking `T` segment by segment
 - Added `objectUtils.diff(input, initial, options?)`, which recursively compares two objects and returns only the
   differing values (`{ path, inputValue, initialValue }`) as a nested or flat (`output: "flat"`) result. It supports
   custom array pairing (`onArrayDiff`), a leaf comparator (`isEqual`) and ignored paths (`ignore`); dates are compared
@@ -33,6 +34,13 @@
 - `DotPaths`, `LeafDotPaths` and `DotPathsWithArrayIndex` apply the same fallback: types without known keys produce
   `string` instead of `never`, and an opaque nested field yields `` `field.${string}` `` — previously `LeafDotPaths`
   dropped such a field entirely
+- `objectUtils.get` return type and `objectUtils.replace` `value` type are now `PathValue<TObject, TKey>` instead of
+  `FlatObject<TObject>[TKey]`. Paths below a `Record<string, T>` resolve exactly (`"byId.1.value"` → `string`, not the
+  record value), and paths below the `FlatObject` depth limit get their exact type instead of `unknown`
+- `FlatObject` now emits paths for numeric keys (`Record<number, T>`, `{ 1: T }`) as `${bigint}` segments — previously
+  such keys had no child paths at all
+- `objectUtils.get` reads only own properties, so a path never resolves to an inherited value — e.g. `"toString"` or
+  `"tags.map"` now yield `undefined` instead of the prototype function
 
 # v0.5.0
 

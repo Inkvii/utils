@@ -35,6 +35,19 @@ describe("replace (types)", () => {
 		replace(object, "nested.arr.0", { key: 1 })
 	})
 
+	it("types the value of each segment below a record", () => {
+		type Row = { id: number; value: string }
+		const records = {} as { byId: Record<string, Row>; byIndex: Record<number, Row> }
+
+		replace(records, "byId.1", { id: 1, value: "one" })
+		replace(records, "byId.1.value", "one")
+		replace(records, "byIndex.1.id", 1)
+		// @ts-expect-error string leaf does not accept a Row
+		replace(records, "byId.1.value", { id: 1, value: "one" })
+		// @ts-expect-error number leaf does not accept a string
+		replace(records, "byIndex.1.id", "one")
+	})
+
 	it("rejects unknown paths", () => {
 		// @ts-expect-error not a path of Test
 		replace(object, "nope", "x")

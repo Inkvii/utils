@@ -21,15 +21,15 @@ replaced without touching its siblings.
 objectUtils.replace<TObject, TKey extends keyof FlatObject<TObject> & string>(
 	object: TObject,
 	key: TKey,
-	value: FlatObject<TObject>[TKey],
+	value: PathValue<TObject, TKey>,
 ): TObject
 ```
 
-| Parameter | Type                        | Description                                                                                                                                                                          |
-| --------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `object`  | `TObject`                   | The source object. Returned untouched; the result is a clone.                                                                                                                        |
-| `key`     | `TKey`                      | A dot-notation path into `object`, constrained to the valid paths of [`FlatObject<TObject>`](./types.md#flatobjectt) (intermediate and leaf paths, including numeric array indices). |
-| `value`   | `FlatObject<TObject>[TKey]` | The replacement value. Its type is derived from `key`, so it must match the type at that path.                                                                                       |
+| Parameter | Type                                                      | Description                                                                                                                                                                          |
+| --------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `object`  | `TObject`                                                 | The source object. Returned untouched; the result is a clone.                                                                                                                        |
+| `key`     | `TKey`                                                    | A dot-notation path into `object`, constrained to the valid paths of [`FlatObject<TObject>`](./types.md#flatobjectt) (intermediate and leaf paths, including numeric array indices). |
+| `value`   | [`PathValue<TObject, TKey>`](./types.md#pathvaluet-tpath) | The replacement value. Its type is derived from `key`, so it must match the type at that path.                                                                                       |
 
 - **Type-safe path & value** — `key` only accepts real paths of `object`, and `value` must match the type found there
   (e.g. a `boolean` leaf rejects a `string`, a whole array element must match the element shape).
@@ -81,7 +81,7 @@ without a cast — the read counterpart of [`objectUtils.replace`](#objectutilsr
 objectUtils.get<TObject, TKey extends keyof FlatObject<TObject> & string>(
 	object: TObject,
 	key: TKey
-): FlatObject<TObject>[TKey]
+): PathValue<TObject, TKey>
 ```
 
 | Parameter | Type      | Description                                                                                                                                                                          |
@@ -89,12 +89,15 @@ objectUtils.get<TObject, TKey extends keyof FlatObject<TObject> & string>(
 | `object`  | `TObject` | The source object. Only read — never mutated.                                                                                                                                        |
 | `key`     | `TKey`    | A dot-notation path into `object`, constrained to the valid paths of [`FlatObject<TObject>`](./types.md#flatobjectt) (intermediate and leaf paths, including numeric array indices). |
 
-- **Inferred return type** — the result is `FlatObject<TObject>[TKey]`, so `objectUtils.get(user, "address.zip")` is a
-  `string` and `objectUtils.get(user, "address")` is the whole `{ city: string; zip: string }` object.
+- **Inferred return type** — the result is [`PathValue<TObject, TKey>`](./types.md#pathvaluet-tpath), so
+  `objectUtils.get(user, "address.zip")` is a `string` and `objectUtils.get(user, "address")` is the whole
+  `{ city: string; zip: string }` object.
 - **Type-safe path** — `key` only accepts real paths of `object`; unknown paths are a compile error.
 - **By reference** — objects and arrays are returned as-is (the same reference), not cloned.
 - **Safe on missing values** — a path through a missing container or an out-of-range array index yields `undefined`
   instead of throwing.
+- **Own properties only** — inherited values are never read, so a path like `"toString"` or `"tags.map"` yields
+  `undefined` instead of the prototype function.
 
 ```ts
 type User = {

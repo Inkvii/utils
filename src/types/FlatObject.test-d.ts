@@ -93,6 +93,30 @@ describe("FlatObject", () => {
 		})
 	})
 
+	describe("records", () => {
+		type Row = { id: number; value: string }
+		type Records = { byId: Record<string, Row>; byIndex: Record<number, Row>; literalKeys: { 1: string } }
+		type FlatRecords = FlatObject<Records>
+
+		it("accepts any path below a string record", () => {
+			expectTypeOf<FlatRecords["byId"]>().toEqualTypeOf<Record<string, Row>>()
+			expectTypeOf<FlatRecords["byId.1"]>().toEqualTypeOf<Row>()
+			assertType<keyof FlatRecords>("byId.1.value")
+			assertType<keyof FlatRecords>("byId.abc.id")
+		})
+
+		it("emits numeric keys as integer segments", () => {
+			expectTypeOf<FlatRecords["byIndex"]>().toEqualTypeOf<Record<number, Row>>()
+			expectTypeOf<FlatRecords["byIndex.1"]>().toEqualTypeOf<Row>()
+			expectTypeOf<FlatRecords["byIndex.1.value"]>().toEqualTypeOf<string>()
+			expectTypeOf<FlatRecords["literalKeys.1"]>().toEqualTypeOf<string>()
+			// @ts-expect-error "abc" is not a numeric key
+			assertType<keyof FlatRecords>("byIndex.abc")
+			// @ts-expect-error "2" is not a key of literalKeys
+			assertType<keyof FlatRecords>("literalKeys.2")
+		})
+	})
+
 	// Only `TDepth` (default 5) nested objects/arrays below the root are
 	// expanded. Deeper paths are accepted but typed loosely as `unknown`, which
 	// keeps recursive types from expanding forever.

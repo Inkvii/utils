@@ -44,6 +44,24 @@ describe("getObjectValue (types)", () => {
 		expectTypeOf(get(object, "matrix.0.1")).toEqualTypeOf<number>()
 	})
 
+	it("infers the type of each segment below a record", () => {
+		type Row = { id: number; tags: string[] }
+		const records = {} as { byId: Record<string, Row>; byIndex: Record<number, Row> }
+
+		expectTypeOf(get(records, "byId.1")).toEqualTypeOf<Row>()
+		expectTypeOf(get(records, "byId.1.id")).toEqualTypeOf<number>()
+		expectTypeOf(get(records, "byId.abc.tags.0")).toEqualTypeOf<string>()
+		expectTypeOf(get(records, "byIndex.1")).toEqualTypeOf<Row>()
+		expectTypeOf(get(records, "byIndex.1.tags")).toEqualTypeOf<string[]>()
+	})
+
+	it("infers exact types below the FlatObject depth limit", () => {
+		type Folder = { name: string; children: Folder[] }
+		const folder = {} as Folder
+
+		expectTypeOf(get(folder, "children.0.children.0.children.0.name")).toEqualTypeOf<string>()
+	})
+
 	it("rejects numeric segments that are not array indices", () => {
 		// @ts-expect-error "1.5" is not an array index
 		get(object, "d.1.5")
