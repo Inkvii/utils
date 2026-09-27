@@ -32,16 +32,16 @@ export type DotPathsWithArrayIndex<TObject, TDepth extends number = 5> = DotPath
 type DotPathsWithArrayIndexAt<TObject, TRemaining extends unknown[]> =
 	IsOpaque<TObject> extends true
 		? string
-		: TObject extends unknown[]
-			? TObject extends (infer TElement)[]
-				? TElement extends unknown[]
+		: TObject extends readonly unknown[]
+			? TObject extends readonly (infer TElement)[]
+				? TElement extends readonly unknown[]
 					? `${bigint}` | `${bigint}.${ChildPaths<TElement, TRemaining>}`
 					: IsPlainObject<TElement> extends true
 						? `${bigint}` | `${bigint}.${ChildPaths<TElement, TRemaining>}`
 						: `${bigint}`
 				: never
 			: {
-					[TKey in keyof TObject]-?: TObject[TKey] extends unknown[]
+					[TKey in keyof TObject]-?: TObject[TKey] extends readonly unknown[]
 						? (TKey & string) | `${TKey & string}.${ChildPaths<TObject[TKey], TRemaining>}`
 						: IsPlainObject<TObject[TKey]> extends true
 							? (TKey & string) | `${TKey & string}.${ChildPaths<TObject[TKey], TRemaining>}`

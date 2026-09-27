@@ -7,12 +7,28 @@ export function isPlainObject(v: unknown): v is Record<string, unknown> {
 	return prototype === Object.prototype || prototype === null
 }
 
-export function isEmptyObject(v: unknown): v is object {
+/**
+ * Narrows to an object without keys. Objects with required keys are kept in the `false` branch.
+ * @example ```tsx
+ * if (!isEmptyObject(form)) form.name // form is still typed as the form
+ * ```
+ */
+export function isEmptyObject(v: unknown): v is Record<string, never> {
 	if (!isPlainObject(v)) return false
 	return Object.keys(v).length === 0
 }
 
-export function isEmptyArray(v: unknown): v is Array<unknown> {
+/**
+ * Narrows to the array members of `v` with `length: 0`. Arrays are kept in the `false` branch, since a non‑empty array
+ * has the same type.
+ * @example ```tsx
+ * if (isEmptyArray(items)) return <Empty />
+ * items.map(...) // items is still string[]
+ * ```
+ */
+export function isEmptyArray<T>(
+	v: T
+): v is unknown extends T ? T & unknown[] & { length: 0 } : Extract<T, readonly unknown[]> & { length: 0 } {
 	return Array.isArray(v) && v.length === 0
 }
 
